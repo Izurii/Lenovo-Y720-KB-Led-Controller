@@ -6,6 +6,14 @@
 	<title>Lenovo Y720 Keyboard Controller</title>
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.css">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<style>
+		.keys {
+			height: 30px !important;
+			border-radius: 5px;
+			margin: 3px;
+			text-align: center;
+		}
+	</style>
 </head>
 
 <body>
@@ -13,6 +21,20 @@
 		<md-toolbar layout="row" class="md-whiteframe-z1" style="padding: 10px;">
 			<h3>Lenovo Y720 Keyboard Backlight Controller</h3>
 		</md-toolbar>
+		<div layout="row" flex>
+			<div layout="column">
+				<div ng-repeat="row in keyboard" layout="row" flex>
+					<div ng-repeat="key in keyboard[$index]" layout-align="center center" layout="column" ng-bind-html="getKey(key, $parent.$index, $index, 'k')">
+					</div>
+				</div>
+			</div>
+			<div layout="column">
+				<div ng-repeat="row in numpad" layout="row" ng-style="{'align-self': {{$index}}==4 ? 'center':'none'}"flex>
+					<div ng-repeat="key in numpad[$index]" layout-align="center center" layout="column" ng-bind-html="getKey(key, $parent.$index, $index, 'n')">
+					</div>
+				</div>
+			</div>
+		</div>
 		<md-content flex layout="row" id="content">
 			<div layout-align="center center" layout-padding layout="row"
 				style="max-width: 20%; min-width:75px; margin: 10px; background-color: #2A2A2A;" md-whiteframe="5dp"

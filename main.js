@@ -13,7 +13,11 @@ app.on('ready', () => {
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: false			
-		}
+		},
+		minHeight:640,
+		minWidth:1150,
+		maxHeight:640,
+		maxWidth:1150
 	});
 	app.allowRendererProcessReuse = false;
 	mainWindow.loadFile(path.join(__dirname, 'index.html'));
@@ -31,6 +35,6 @@ app.on('activate', () => {
   }
 });
 
-ipcMain.on('setKB', (event, segmentOptions) => {
-	setKeyboardOptions(3, segmentOptions);
+ipcMain.on('setKB', (event, backlightMode, segmentOptions) => {
+	setKeyboardOptions(backlightMode, segmentOptions);
 });

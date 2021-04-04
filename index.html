@@ -8,10 +8,17 @@
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<style>
 		.keys {
-			height: 30px !important;
+			height: 35px !important;
 			border-radius: 5px;
 			margin: 3px;
 			text-align: center;
+		}
+		.not-selectable {
+			user-select: none;
+        	-moz-user-select: none;
+        	-khtml-user-select: none;
+        	-webkit-user-select: none;
+        	-o-user-select: none;
 		}
 	</style>
 </head>
@@ -21,20 +28,6 @@
 		<md-toolbar layout="row" class="md-whiteframe-z1" style="padding: 10px;">
 			<h3>Lenovo Y720 Keyboard Backlight Controller</h3>
 		</md-toolbar>
-		<div layout="row" flex>
-			<div layout="column">
-				<div ng-repeat="row in keyboard" layout="row" flex>
-					<div ng-repeat="key in keyboard[$index]" layout-align="center center" layout="column" ng-bind-html="getKey(key, $parent.$index, $index, 'k')">
-					</div>
-				</div>
-			</div>
-			<div layout="column">
-				<div ng-repeat="row in numpad" layout="row" ng-style="{'align-self': {{$index}}==4 ? 'center':'none'}"flex>
-					<div ng-repeat="key in numpad[$index]" layout-align="center center" layout="column" ng-bind-html="getKey(key, $parent.$index, $index, 'n')">
-					</div>
-				</div>
-			</div>
-		</div>
 		<md-content flex layout="row" id="content">
 			<div layout-align="center center" layout-padding layout="row"
 				style="max-width: 20%; min-width:75px; margin: 10px; background-color: #2A2A2A;" md-whiteframe="5dp"
@@ -70,31 +63,109 @@
 					</div>
 				</div>
 			</div>
-			<div layout-align="center center" layout-padding layout="row" style="width:100%; margin: 10px; background-color: #2A2A2A;" md-whiteframe="5dp" layout-wrap ng-cloak>
-				<div style="background-color: #FFFFFF;">
-					<md-radio-group layout="row" ng-model="selectedSegment">
-						<md-radio-button value="0">1</md-radio-button>
-						<md-radio-button value="1">2</md-radio-button>
-						<md-radio-button value="2">3</md-radio-button>
-						<md-radio-button value="3">4</md-radio-button>
-					</md-radio-group>
-					<md-input-container>
-						<label>Segment brightness level</label>
-						<md-select ng-model="segmentsOptions[selectedSegment].segmentBrightness">
-							<md-option ng-value="0">OFF</md-option>
-							<md-option ng-value="1">LOW</md-option>
-							<md-option ng-value="2">MEDIUM</md-option>
-							<md-option ng-value="3">HIGH</md-option>
-							<md-option ng-value="4">ULTRA</md-option>
-							<md-option ng-value="4">ENOUGH</md-option>
-						</md-select>
-					</md-input-container>
-					<md-button ng-click="apply()">Apply</md-button>
+			<div layout-align="center center" layout-padding layout="column" style="width:100%; margin: 10px; background-color: #2A2A2A;" md-whiteframe="5dp" ng-cloak>
+				<div layout="row">
+					<div layout="column">
+						<div ng-repeat="row in keyboard" layout="row" flex>
+							<div
+								ng-repeat="key in keyboard[$index]"
+								ng-click="selectSegment($parent.$index, $index, 'k')"
+								layout-align="center center"
+								layout="column"
+								ng-bind-html="getKey(key, $parent.$index, $index, 'k')"
+								style="outline: none !important;"
+							>
+							</div>
+						</div>
+					</div>
+					<div layout="column">
+						<div ng-repeat="row in numpad" layout="row" ng-style="{'align-self': ({{$index}}==4 || {{$index}}==5)? 'center':'none'}"flex>
+							<div
+								ng-repeat="key in numpad[$index]"
+								ng-click="selectSegment($parent.$index, $index, 'n')"
+								layout-align="center center"
+								layout="column"
+								ng-bind-html="getKey(key, $parent.$index, $index, 'n')"
+								style="outline: none !important;"
+							>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div layout="row" layout-padding>
+					<div layout="row">
+						<md-input-container>
+							<md-select ng-model="backlightMode" style="background-color: white;">
+								<md-option ng-value="0">Heartbeat</md-option>
+								<md-option ng-value="1">Breath</md-option>
+								<md-option ng-value="2">Smooth</md-option>
+								<md-option ng-value="3">Always On</md-option>
+								<md-option ng-value="4">Wave</md-option>
+							</md-select>
+						</md-input-container>
+						<md-button ng-click="apply()" class="md-raised">Apply</md-button>
+					</div>
+					<div layout="row">
+						<md-input-container ng-show="!advancedBrightness">
+							<md-select ng-change="changeAllSegmentBrightness()" ng-model="selectedBrightness" style="background-color: white;">
+								<md-option ng-value="0">OFF</md-option>
+								<md-option ng-value="1">LOW</md-option>
+								<md-option ng-value="2">MEDIUM</md-option>
+								<md-option ng-value="3">HIGH</md-option>
+								<md-option ng-value="4">ULTRA</md-option>
+								<md-option ng-value="5">ENOUGH</md-option>
+							</md-select>
+						</md-input-container>
+						<div layout="row" ng-show="advancedBrightness">
+							<md-input-container>
+								<md-select ng-model="segmentsOptions[0].segmentBrightness" style="background-color: white;">
+									<md-option ng-value="0">OFF</md-option>
+									<md-option ng-value="1">LOW</md-option>
+									<md-option ng-value="2">MEDIUM</md-option>
+									<md-option ng-value="3">HIGH</md-option>
+									<md-option ng-value="4">ULTRA</md-option>
+									<md-option ng-value="5">ENOUGH</md-option>
+								</md-select>
+							</md-input-container>
+							<md-input-container>
+								<md-select ng-model="segmentsOptions[1].segmentBrightness" style="background-color: white;">
+									<md-option ng-value="0">OFF</md-option>
+									<md-option ng-value="1">LOW</md-option>
+									<md-option ng-value="2">MEDIUM</md-option>
+									<md-option ng-value="3">HIGH</md-option>
+									<md-option ng-value="4">ULTRA</md-option>
+									<md-option ng-value="5">ENOUGH</md-option>
+								</md-select>
+							</md-input-container>
+							<md-input-container>
+								<md-select ng-model="segmentsOptions[2].segmentBrightness" style="background-color: white;">
+									<md-option ng-value="0">OFF</md-option>
+									<md-option ng-value="1">LOW</md-option>
+									<md-option ng-value="2">MEDIUM</md-option>
+									<md-option ng-value="3">HIGH</md-option>
+									<md-option ng-value="4">ULTRA</md-option>
+									<md-option ng-value="5">ENOUGH</md-option>
+								</md-select>
+							</md-input-container>
+							<md-input-container>
+								<md-select ng-model="segmentsOptions[3].segmentBrightness" style="background-color: white;">
+									<md-option ng-value="0">OFF</md-option>
+									<md-option ng-value="1">LOW</md-option>
+									<md-option ng-value="2">MEDIUM</md-option>
+									<md-option ng-value="3">HIGH</md-option>
+									<md-option ng-value="4">ULTRA</md-option>
+									<md-option ng-value="5">ENOUGH</md-option>
+								</md-select>
+							</md-input-container>
+						</div>
+						<md-button ng-click="showHideAdvancedBrightnessOptions()">
+							{{advancedBrightness ? 'Hide advanced brightness options' : 'Show advanced brightness options'}}
+						</md-button>
+					</div>
 				</div>
 			</div>
 		</md-content>
 	</div>
 	<script src="app.js"></script>
 </body>
-
 </html>

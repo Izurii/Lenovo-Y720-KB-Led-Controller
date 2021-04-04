@@ -72,16 +72,51 @@ const Colors = [
 
 var app = angular.module('app', ['ngRoute', 'ngAnimate', 'ngMaterial']);
 
-app.config(['$routeProvider', function ($routeProvider) {
-	
+app.filter('htmlTrusted', ['$sce', function($sce){
+	return function(text){ return $sce.trustAsHtml(text); };
 }])
-.controller('indexController', function ($scope) {
+.controller('indexController', function ($scope, $sce) {
 	
 	$scope.brightness = SegmentBrightness;
 	$scope.colors = Colors;
 	$scope.blMode = BacklightMode;
-	$scope.segmentsOptions = [];
+
+	$scope.keyboard = [];
+	$scope.numpad = [];
+
+	let keys = [
+		['35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px'],
+		['34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '45px'], // diff 0.7px => 30px => 29.3px
+		['45px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px'], // diff 0.7px => 30px => 29.3px
+		['62px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '55px'], // diff 3.3px => 30px => 29.43px
+		['54px', '35.7px', '35.7px', '35.7px', '35.7px', '35.7px', '35.7px', '35.7px', '35.7px', '35.7px', '35.7px', '92px'], // diff 0.15 => 30px => 29.85px
+		['45px', '40.5px', '40.5px', '40.5px', '193px', '40.5px', '40.5px', '40.5px', '40.5px']
+	];
+
+	let keys_numpad = [
+		['30px', '30px', '30px', '30px'],
+		['30px', '30px', '30px', '30px'],
+		['30px', '30px', '30px', '30px'],
+		['30px', '30px', '30px', '30px'],
+		['41px'],
+		['41px', '41px', '41px']
+	];
+
+	keys_numpad.forEach(i => $scope.numpad.push(Object.assign({}, i)));
+	keys.forEach(i => $scope.keyboard.push(Object.assign({}, i)));
+
+	$scope.segmentsOptions = [
+		{ segmentColor: 0, segmentBrightness : $scope.brightness.HIGH },
+		{ segmentColor: 0, segmentBrightness : $scope.brightness.HIGH },
+		{ segmentColor: 0, segmentBrightness : $scope.brightness.HIGH },
+		{ segmentColor: 0, segmentBrightness : $scope.brightness.HIGH }
+	];
+
 	$scope.selectedSegment = 0;
+	$scope.selectedBrightness = 3;
+	$scope.backlightMode = 3;
+
+	$scope.advancedBrightness = false;
 
 	$scope.selectSegmentColor = ($index) => $scope.segmentsOptions[$scope.selectedSegment] = { 
 		...$scope.segmentsOptions[$scope.selectedSegment],
@@ -94,23 +129,53 @@ app.config(['$routeProvider', function ($routeProvider) {
 				return true;
 	};
 
-	$scope.apply = () => {
-		ipcRenderer.send('setKB', $scope.segmentsOptions);
+	const getKeyRow = (keyRow, keyIndex, kOrN) => {
+		if(kOrN=='k') {
+			if(keyIndex < 4) keyRow = 0;
+			if(keyIndex >= 4 && keyIndex < 9) { if((keyRow!=5) || (keyRow==5&&keyIndex==4)) keyRow = 1; else keyRow=2; };
+			if(keyIndex >= 9 && keyIndex < 14) keyRow = 2;
+		} else if (kOrN=='n')
+			keyRow = 3;
+		return keyRow;
 	};
 
-	// 71 teclas iguais
-	// 16 teclas numpad
-	// 1 space
-	// 1 shifts
-	// 1 enter
-	// 1 backspapce
-	// 1 tab
-	// 1 caps lock
-	// 1 ctrl, alt gr, rec, ask and slash (right side) = 4
+	$scope.selectSegment = (keyRow, keyIndex, kOrN) => { let idx = getKeyRow(keyRow, keyIndex, kOrN); $scope.selectedSegment = idx; };
+	$scope.getKey = (keyWidth, keyRow, keyIndex, kOrN) => {
 
-	// -----
-	// 97 teclas
+		var boxShadow;
+		let colorOption = '#000000'
+		keyRow = getKeyRow(keyRow, keyIndex, kOrN)
+		console.log($scope.segmentsOptions[keyRow]);
+		if($scope.segmentsOptions[keyRow].segmentColor!=undefined)
+			colorOption = Colors[$scope.segmentsOptions[keyRow].segmentColor].colorHex;
+		if(keyRow==$scope.selectedSegment)
+			boxShadow = 'box-shadow: inset 0 0 8px #ffffff';
 
+		return $sce.trustAsHtml(`<span
+			class="keys not-selectable"
+			style=
+			"
+				width:${keyWidth} !important;
+				border: 2px solid ${colorOption};
+				${boxShadow}
+			"
+			>
+		</span>`);
+	};
 
+	$scope.showHideAdvancedBrightnessOptions = () => {
+		if($scope.advancedBrightness) $scope.advancedBrightness = false;
+		else $scope.advancedBrightness = true;
+	};
+
+	$scope.changeAllSegmentBrightness = () => {
+		$scope.segmentsOptions.forEach((item, idx) => {
+			$scope.segmentsOptions[idx].segmentBrightness = $scope.selectedBrightness;
+		});
+	};
+
+	$scope.apply = () => {
+		ipcRenderer.send('setKB', $scope.backlightMode, $scope.segmentsOptions);
+	};
 
 });

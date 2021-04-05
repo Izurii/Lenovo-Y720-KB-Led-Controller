@@ -170,7 +170,7 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 	$scope.selectSegment = (keyRow, keyIndex, kOrN) => { let idx = getKeyRow(keyRow, keyIndex, kOrN); $scope.selectedSegment = idx; };
 	$scope.getKey = (keyWidth, keyRow, keyIndex, kOrN) => {
 		
-		var boxShadowInner;
+		var boxShadowInner = '';
 		let colorOption = '#000000'
 
 		keyRow = getKeyRow(keyRow, keyIndex, kOrN)

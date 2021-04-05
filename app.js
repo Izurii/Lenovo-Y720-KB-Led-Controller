@@ -118,9 +118,12 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 
 	$scope.advancedBrightness = false;
 
-	$scope.selectSegmentColor = (index) => $scope.segmentsOptions[$scope.selectedSegment] = { 
-		...$scope.segmentsOptions[$scope.selectedSegment],
-		segmentColor: index
+	$scope.selectSegmentColor = (index) => {
+		$scope.segmentsOptions[$scope.selectedSegment] = { 
+			...$scope.segmentsOptions[$scope.selectedSegment],
+			segmentColor: index
+		};
+		$scope.applySettings();
 	};
 
 	$scope.checkSelectedSegmentColor = (index) => {
@@ -149,7 +152,10 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 		return $sce.trustAsHtml(iconButton);
 	};
 
-	$scope.changeBacklightMode = (index) => $scope.backlightMode = index;
+	$scope.changeBacklightMode = (index) => { 
+		$scope.backlightMode = index;
+		$scope.applySettings();
+	};
 
 	const getKeyRow = (keyRow, keyIndex, kOrN) => {
 		if(kOrN=='k') {
@@ -197,10 +203,11 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 		$scope.segmentsOptions.forEach((item, idx) => {
 			$scope.segmentsOptions[idx].segmentBrightness = $scope.selectedBrightness;
 		});
-	};
-
-	$scope.apply = () => {
 		ipcRenderer.send('setKB', $scope.backlightMode, $scope.segmentsOptions);
 	};
+
+	$scope.applySettings = () => {
+		ipcRenderer.send('setKB', $scope.backlightMode, $scope.segmentsOptions);
+;	}
 
 });

@@ -118,16 +118,38 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 
 	$scope.advancedBrightness = false;
 
-	$scope.selectSegmentColor = ($index) => $scope.segmentsOptions[$scope.selectedSegment] = { 
+	$scope.selectSegmentColor = (index) => $scope.segmentsOptions[$scope.selectedSegment] = { 
 		...$scope.segmentsOptions[$scope.selectedSegment],
-		segmentColor: $index
+		segmentColor: index
 	};
 
-	$scope.checkSelectedSegmentColor = ($index) => {
+	$scope.checkSelectedSegmentColor = (index) => {
 		if($scope.segmentsOptions[$scope.selectedSegment]!=undefined)
-			if($scope.segmentsOptions[$scope.selectedSegment].segmentColor==$index)
+			if($scope.segmentsOptions[$scope.selectedSegment].segmentColor==index)
 				return true;
 	};
+
+	$scope.backlightModeIcons = [
+		'./assets/heartbeat.jpg',
+		'./assets/breath.jpg',
+		'./assets/smooth.jpg',
+		'./assets/always_on.jpg',
+		'./assets/wave.jpg',
+	];
+
+	$scope.getModeIcon = (index) => {
+
+		let iconButton = `
+			<img
+				class="mode-icon"
+				src="${$scope.backlightModeIcons[index]}"
+				${(index==$scope.backlightMode) ? 'style="border: 3px solid #FFFFFF">' : 
+			'>'}`;
+
+		return $sce.trustAsHtml(iconButton);
+	};
+
+	$scope.changeBacklightMode = (index) => $scope.backlightMode = index;
 
 	const getKeyRow = (keyRow, keyIndex, kOrN) => {
 		if(kOrN=='k') {
@@ -141,15 +163,18 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 
 	$scope.selectSegment = (keyRow, keyIndex, kOrN) => { let idx = getKeyRow(keyRow, keyIndex, kOrN); $scope.selectedSegment = idx; };
 	$scope.getKey = (keyWidth, keyRow, keyIndex, kOrN) => {
-
-		var boxShadow;
+		
+		var boxShadowInner;
 		let colorOption = '#000000'
+
 		keyRow = getKeyRow(keyRow, keyIndex, kOrN)
-		console.log($scope.segmentsOptions[keyRow]);
+		
 		if($scope.segmentsOptions[keyRow].segmentColor!=undefined)
 			colorOption = Colors[$scope.segmentsOptions[keyRow].segmentColor].colorHex;
-		if(keyRow==$scope.selectedSegment)
-			boxShadow = 'box-shadow: inset 0 0 8px #ffffff';
+
+		if(keyRow==$scope.selectedSegment) boxShadowInner = 'inset 0 0 8px #ffffff';
+
+		var boxShadow = `box-shadow: ${boxShadowInner} ${($scope.segmentsOptions[keyRow].segmentColor!=19&&boxShadowInner) ? ', ' : ''} ${($scope.segmentsOptions[keyRow].segmentColor!=19) ? `0 0 ${$scope.segmentsOptions[keyRow].segmentBrightness * 2.3}px ${$scope.segmentsOptions[keyRow].segmentBrightness / 1.6}px ${colorOption}` : ''}`;
 
 		return $sce.trustAsHtml(`<span
 			class="keys not-selectable"
@@ -157,7 +182,7 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 			"
 				width:${keyWidth} !important;
 				border: 2px solid ${colorOption};
-				${boxShadow}
+				${boxShadow};
 			"
 			>
 		</span>`);

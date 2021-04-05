@@ -208,6 +208,6 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 
 	$scope.applySettings = () => {
 		ipcRenderer.send('setKB', $scope.backlightMode, $scope.segmentsOptions);
-;	}
+	};
 
 });

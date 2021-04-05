@@ -14,10 +14,11 @@ app.on('ready', () => {
 			nodeIntegration: true,
 			contextIsolation: false			
 		},
-		minHeight:640,
-		minWidth:1150,
-		maxHeight:640,
-		maxWidth:1150
+		minHeight:548,
+		minWidth:1400,
+		maxHeight:548,
+		maxWidth:1400,
+		autoHideMenuBar:true,
 	});
 	app.allowRendererProcessReuse = false;
 	mainWindow.loadFile(path.join(__dirname, 'index.html'));

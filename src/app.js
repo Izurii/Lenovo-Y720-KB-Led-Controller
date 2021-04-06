@@ -4,7 +4,9 @@ var angular = require('angular');
 require('angular-route');
 require('angular-material');
 const { ipcRenderer } = require('electron');
-const { SegmentBrightness, BacklightMode } = require('./driver/options');
+const { SegmentBrightness, BacklightMode } = require('../driver/options');
+
+const userProfilesStore = ipcRenderer.sendSync('getUserProfiles');
 
 const Colors = [
 	{
@@ -105,12 +107,26 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 	keys_numpad.forEach(i => $scope.numpad.push(Object.assign({}, i)));
 	keys.forEach(i => $scope.keyboard.push(Object.assign({}, i)));
 
-	$scope.segmentsOptions = [
+	$scope.applySettings = (backlightMode=null, profileOptions=null) => {
+		if(backlightMode!=null&&profileOptions!=null)
+			ipcRenderer.send('setKB', backlightMode, profileOptions);
+		else
+			ipcRenderer.send('setKB', $scope.backlightMode, $scope.segmentsOptions);
+	};
+
+	const baseSegmentsOptions = [
 		{ segmentColor: 0, segmentBrightness : $scope.brightness.HIGH },
 		{ segmentColor: 0, segmentBrightness : $scope.brightness.HIGH },
 		{ segmentColor: 0, segmentBrightness : $scope.brightness.HIGH },
 		{ segmentColor: 0, segmentBrightness : $scope.brightness.HIGH }
 	];
+
+	if(userProfilesStore.selectedProfile!==undefined) {
+		var userSelectedProfile = userProfilesStore.profiles[userProfilesStore.selectedProfile];
+		$scope.applySettings(userSelectedProfile.backlightMode, userSelectedProfile.profileOptions);
+	}
+	
+	$scope.segmentsOptions = userProfilesStore.selectedProfile!==undefined ? userSelectedProfile.profileOptions : baseSegmentsOptions;
 
 	$scope.selectedSegment = 0;
 	$scope.selectedBrightness = 3;
@@ -203,10 +219,6 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 		$scope.segmentsOptions.forEach((item, idx) => {
 			$scope.segmentsOptions[idx].segmentBrightness = $scope.selectedBrightness;
 		});
-		ipcRenderer.send('setKB', $scope.backlightMode, $scope.segmentsOptions);
-	};
-
-	$scope.applySettings = () => {
 		ipcRenderer.send('setKB', $scope.backlightMode, $scope.segmentsOptions);
 	};
 

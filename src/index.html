@@ -61,7 +61,7 @@
 			<div layout="row">
 				<div layout="row">
 					<md-input-container ng-show="!advancedBrightness">
-						<md-select ng-change="changeAllSegmentBrightness()" ng-model="selectedBrightness"
+						<md-select aria-label="brightnessSelect" ng-change="changeAllSegmentBrightness()" ng-model="selectedBrightness"
 							style="background-color: white;">
 							<md-option ng-value="0">OFF</md-option>
 							<md-option ng-value="1">LOW</md-option>
@@ -74,7 +74,7 @@
 					<div layout="row" ng-show="advancedBrightness">
 						<div ng-repeat="segment in segmentsOptions">
 							<md-input-container>
-								<md-select ng-change="applySettings()" ng-model="segmentsOptions[$index].segmentBrightness" style="background-color: white;">
+								<md-select aria-label="brightnessSelect" ng-change="applySettings()" ng-model="segmentsOptions[$index].segmentBrightness" style="background-color: white;">
 									<md-option ng-value="0">OFF</md-option>
 									<md-option ng-value="1">LOW</md-option>
 									<md-option ng-value="2">MEDIUM</md-option>

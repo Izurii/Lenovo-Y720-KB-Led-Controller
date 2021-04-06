@@ -8,9 +8,11 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-	"rebuild": "./node_modules/.bin/electron-rebuild",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron-forge start",
+    "rebuild": "./node_modules/.bin/electron-rebuild",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,7 @@
   },
   "homepage": "https://github.com/Izurii/Lenovo-Y720-KB-LED-Driver#readme",
   "devDependencies": {
+    "@electron-forge/cli": "*",
     "electron": "^12.0.2",
     "electron-rebuild": "^2.3.5",
     "electron-reloader": "^1.2.0"
@@ -34,6 +37,7 @@
     "angular-aria": "^1.8.2",
     "angular-material": "^1.2.2",
     "angular-route": "^1.8.2",
+    "electron-store": "^7.0.2",
     "ioctl": "^2.0.2",
     "proper-lockfile": "^4.1.2"
   }

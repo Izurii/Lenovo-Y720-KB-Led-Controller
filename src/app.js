@@ -125,7 +125,7 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 			if(x==$scope.selectedProfile) profilesArray[x].backlightMode = $scope.backlightMode;
 			delete profilesArray[x]['$$hashKey'];
 			profilesArray[x].profileOptions.forEach((ii, xx) => {
-				delete profilesArray[x].profileOptions[xx]['$$hashkey'];
+				delete profilesArray[x].profileOptions[xx]['$$hashKey'];
 			});
 		});
 
@@ -186,10 +186,15 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 	};
 
 	$scope.deleteProfile = () => {
-		$scope.selectedProfile = $scope.userProfiles.length-2;
+		
+		if($scope.userProfiles.length <= 1) return;
+
+		$scope.userProfiles.splice($scope.selectedProfile, 1);
+		$scope.selectedProfile = $scope.selectedProfile-1;
 		$scope.changeProfile();
-		$scope.userProfiles.splice($scope.selectedProfile+1, 1);
+		
 		$scope.saveProfiles();
+
 	};
 
 	$scope.renameProfile = () => {

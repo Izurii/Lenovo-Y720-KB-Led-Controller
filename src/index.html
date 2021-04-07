@@ -26,6 +26,9 @@
 			max-height: 70px;
 			border: 1px solid #9a9a9a54;
 		}
+		md-dialog {
+			min-width: 40%;
+		}
 	</style>
 </head>
 
@@ -34,7 +37,8 @@
 		<div layout="column" style="width:100%; margin:10px;" layout-padding layout-align="center center" flex>
 			<div
 				layout="row"
-				layout-align="start center"
+				layout-align="center center"
+				layout-margin
 				style="width: 100%; margin: 10px; background-color: #333333;"
 				md-whiteframe="5dp"
 			>
@@ -52,6 +56,9 @@
 							{{userProfile.profileName}}
 						</md-option>
 					</md-select>
+					<md-button class="md-raised" ng-click="addProfile()">ADD PROFILE</md-button>
+					<md-button class="md-raised" ng-click="renameProfile()">RENAME PROFILE</md-button>
+					<md-button class="md-raised" ng-click="deleteProfile()">DELETE PROFILE</md-button>
 			</div>
 			<div
 				layout-align="center center"
@@ -116,8 +123,9 @@
 		</div>
 		<div
 			layout-align="center center"
-			layout-padding
+			layout-margin
 			style="max-width: 23%; min-width:75px; background-color: #333333;"
+			md-whiteframe="5dp"
 			flex
 		>
 			<div layout="column" layout-align="center center" layout-padding flex>

@@ -82,26 +82,33 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 	$scope.brightness = SegmentBrightness;
 	$scope.colors = Colors;
 	$scope.blMode = BacklightMode;
+	
+	$scope.selectedProfile = userProfilesStore.selectedProfile;
+	$scope.userProfiles = userProfilesStore.profiles;
 
 	$scope.keyboard = [];
 	$scope.numpad = [];
 
+	$scope.selectedSegment = 0;
+	$scope.selectedBrightness = 3;
+	$scope.backlightMode = 3;
+
 	let keys = [
-		['35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px', '35px'],
-		['34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '45px'], // diff 0.7px => 30px => 29.3px
-		['45px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px', '34.27px'], // diff 0.7px => 30px => 29.3px
-		['62px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '34.5px', '55px'], // diff 3.3px => 30px => 29.43px
-		['54px', '35.7px', '35.7px', '35.7px', '35.7px', '35.7px', '35.7px', '35.7px', '35.7px', '35.7px', '35.7px', '92px'], // diff 0.15 => 30px => 29.85px
-		['45px', '40.5px', '40.5px', '40.5px', '193px', '40.5px', '40.5px', '40.5px', '40.5px']
+		['40px', '40px', '40px', '40px', '40px', '40px', '40px', '40px', '40px', '40px', '40px', '40px', '40px', '40px'],
+		['38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '55px'],
+		['55px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px', '38.87px'],
+		['75px', '38.9px', '38.9px', '38.9px', '38.9px', '38.9px', '38.9px', '38.9px', '38.9px', '38.9px', '38.9px', '38.9px', '67px'],
+		['68px', '39.7px', '39.7px', '39.7px', '39.7px', '39.7px', '39.7px', '39.7px', '39.7px', '39.7px', '39.7px', '115px'],
+		['55px', '47.5px', '47.5px', '47.5px', '222px', '47.5px', '47.5px', '47.5px', '47.5px']
 	];
 
 	let keys_numpad = [
-		['30px', '30px', '30px', '30px'],
-		['30px', '30px', '30px', '30px'],
-		['30px', '30px', '30px', '30px'],
-		['30px', '30px', '30px', '30px'],
-		['41px'],
-		['41px', '41px', '41px']
+		['35px', '35px', '35px', '35px'],
+		['35px', '35px', '35px', '35px'],
+		['35px', '35px', '35px', '35px'],
+		['35px', '35px', '35px', '35px'],
+		['48px'],
+		['48px', '48px', '48px']
 	];
 
 	keys_numpad.forEach(i => $scope.numpad.push(Object.assign({}, i)));
@@ -128,9 +135,13 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 	
 	$scope.segmentsOptions = userProfilesStore.selectedProfile!==undefined ? userSelectedProfile.profileOptions : baseSegmentsOptions;
 
-	$scope.selectedSegment = 0;
-	$scope.selectedBrightness = 3;
-	$scope.backlightMode = 3;
+	$scope.changeProfile = () => {
+		$scope.segmentsOptions = userProfilesStore.profiles[$scope.selectedProfile].profileOptions;
+		$scope.backlightMode = userProfilesStore.profiles[$scope.selectedProfile].backlightMode;
+		console.log($scope.segmentsOptions);
+		console.log($scope.selectedProfile);
+		$scope.applySettings();
+	};
 
 	$scope.advancedBrightness = false;
 

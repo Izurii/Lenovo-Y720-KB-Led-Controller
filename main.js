@@ -31,10 +31,10 @@ app.on('ready', () => {
 			nodeIntegration: true,
 			contextIsolation: false			
 		},
-		minHeight:548,
-		minWidth:1400,
-		maxHeight:548,
-		maxWidth:1400,
+		minHeight:601,
+		minWidth:1350,
+		maxHeight:601,
+		maxWidth:1350,
 		autoHideMenuBar:true,
 		icon:path.join(__dirname, '/src/assets/icon.png')
 	});

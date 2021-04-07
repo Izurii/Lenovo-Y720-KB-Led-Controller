@@ -49,7 +49,7 @@ const findCorrectDevice = async (listOfDevices) => {
 // 	}
 // ];
 
-const setKeyboardOptions = async (backLightMode, segmentsOptions) => {
+const setKeyboardOptions = async (backLightMode, segmentsOptions, lockfilePath) => {
 
 	if(Object.values(BacklightMode).indexOf(backLightMode) <= -1)
 		throw Error('Keyboard backlight mode invalid.')
@@ -69,7 +69,7 @@ const setKeyboardOptions = async (backLightMode, segmentsOptions) => {
 
 	var deviceFile = `${HidrawClassesPath}${correctDevice}/device/uevent`;
 
-	lockfile.lock(deviceFile, { lockfilePath: __dirname + 'lockDir' }).then((release) => {
+	lockfile.lock(deviceFile, { lockfilePath: lockfilePath + 'lockDir' }).then((release) => {
 
 		var fileDescriptor = fs.openSync(`/dev/${correctDevice}`, constants.O_WRONLY);
 

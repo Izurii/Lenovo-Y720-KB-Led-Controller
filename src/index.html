@@ -58,7 +58,7 @@
 					</md-select>
 					<md-button class="md-raised" ng-click="addProfile()">ADD PROFILE</md-button>
 					<md-button class="md-raised" ng-click="renameProfile()">RENAME PROFILE</md-button>
-					<md-button class="md-raised" ng-click="deleteProfile()">DELETE PROFILE</md-button>
+					<md-button class="md-raised" ng-click="deleteProfile()" ng-disabled="userProfiles.length<=1">DELETE PROFILE</md-button>
 			</div>
 			<div
 				layout-align="center center"

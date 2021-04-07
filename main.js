@@ -55,15 +55,35 @@ app.on('activate', () => {
 });
 
 ipcMain.on('setKB', (event, backlightMode, segmentOptions) => {
-	setKeyboardOptions(backlightMode, segmentOptions);
+	setKeyboardOptions(backlightMode, segmentOptions, app.getPath('userData'));
 });
 
 ipcMain.on('getUserProfiles', (event) => {
+	
 	let userProfiles = {
 		selectedProfile : store.get('selectedProfile'),
 		profiles : store.get('profiles')
 	};
+
+	if(!userProfiles.profiles) {
+		userProfiles.selectedProfile = 0;
+		userProfiles.profiles = [
+			{
+				profileName: 'Profile 1',
+				backlightMode: 3,
+				profileOptions: [
+					{ segmentColor: 0, segmentBrightness : 4},
+					{ segmentColor: 0, segmentBrightness : 4},
+					{ segmentColor: 0, segmentBrightness : 4},
+					{ segmentColor: 0, segmentBrightness : 4}
+				]
+			}
+		];
+		store.set(userProfiles);
+	}
+	
 	event.returnValue = userProfiles;
+
 });
 
 ipcMain.on('saveProfiles', (event, profiles) => {

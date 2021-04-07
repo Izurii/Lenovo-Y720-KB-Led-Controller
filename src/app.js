@@ -159,7 +159,7 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 		$scope.applySettings(userSelectedProfile.backlightMode, userSelectedProfile.profileOptions);
 	}
 	
-	$scope.segmentsOptions = userProfilesStore.selectedProfile!==undefined ? userSelectedProfile.profileOptions : baseSegmentsOptions;
+	$scope.segmentsOptions = userSelectedProfile.profileOptions;
 
 	$scope.changeProfile = () => {
 		$scope.segmentsOptions = userProfilesStore.profiles[$scope.selectedProfile].profileOptions;
@@ -178,9 +178,9 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 		.cancel('Cancel');
 
 		$mdDialog.show(dialog).then((result) => {
-			$scope.userProfiles.push({profileName:result, profileOptions:$scope.segmentsOptions});
+			$scope.userProfiles.push({profileName:result, profileOptions:baseSegmentsOptions, backlightMode:3});
 			$scope.selectedProfile = $scope.userProfiles.length-1;
-			$scope.saveProfiles();
+			$scope.changeProfile();
 		}, () => {});
 
 	};
@@ -221,7 +221,7 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 	
 	$scope.selectSegmentColor = (index) => {
 		$scope.segmentsOptions[$scope.selectedSegment] = { 
-			...$scope.segmentsOptions[$scope.selectedSegment],
+			segmentBrightness: $scope.segmentsOptions[$scope.selectedSegment].segmentBrightness,
 			segmentColor: index
 		};
 		$scope.userProfiles[$scope.selectedProfile].profileOptions = $scope.segmentsOptions;

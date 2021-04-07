@@ -31,10 +31,10 @@ app.on('ready', () => {
 			nodeIntegration: true,
 			contextIsolation: false			
 		},
-		minHeight:548,
-		minWidth:1400,
-		maxHeight:548,
-		maxWidth:1400,
+		minHeight:625,
+		minWidth:1350,
+		maxHeight:625,
+		maxWidth:1350,
 		autoHideMenuBar:true,
 		icon:path.join(__dirname, '/src/assets/icon.png')
 	});
@@ -64,4 +64,8 @@ ipcMain.on('getUserProfiles', (event) => {
 		profiles : store.get('profiles')
 	};
 	event.returnValue = userProfiles;
+});
+
+ipcMain.on('saveProfiles', (event, profiles) => {
+	store.set(profiles);
 });

@@ -4,7 +4,7 @@ var angular = require('angular');
 require('angular-route');
 require('angular-material');
 const { ipcRenderer } = require('electron');
-const { SegmentBrightness, BacklightMode } = require('../driver/options');
+const { BacklightMode } = require('../driver/options');
 
 const userProfilesStore = ipcRenderer.sendSync('getUserProfiles');
 

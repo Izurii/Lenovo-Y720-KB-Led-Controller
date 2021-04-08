@@ -3,7 +3,7 @@ const APP_VERSION = require('./package.json').version
 
 // The url that the application is going to query for new release
 const AUTO_UPDATE_URL =
-  'https://api.update.rocks/update/github.com/Izurii/Lenovo-Y720-KB-LED-Controller/stable/' + process.platform + '/' + APP_VERSION
+  'https://api.update.rocks/update/github.com/Izurii/Lenovo-Y720-KB-Led-Controller/stable/' + process.platform + '/' + APP_VERSION
 
 const { app, ipcMain, BrowserWindow, Tray, Menu } = require('electron');
 const { setKeyboardOptions } = require('./driver/index');

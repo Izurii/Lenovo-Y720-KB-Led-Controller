@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Lenovo Y720 Keyboard Controller</title>
+	<title>Lenovo Y720 Keyboard Led Controller</title>
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.1/angular-material.min.css">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<style>
@@ -29,6 +29,14 @@
 		md-dialog {
 			min-width: 40%;
 		}
+		button.md-raised {
+			background-color: rgb(78, 78, 78) !important;
+			color: #FFF !important;
+		}
+		button.md-raised[disabled] {
+			background-color: rgb(37, 37, 37) !important;
+			color: black !important;
+		}
 	</style>
 </head>
 
@@ -42,27 +50,32 @@
 				style="width: 100%; margin: 10px; background-color: #333333;"
 				md-whiteframe="5dp"
 			>
-					<label>User profile</label>
-					<md-select
-						md-whiteframe="5dp"
-						ng-model="selectedProfile"
-						ng-change="changeProfile()"
-						style="min-width: 200px; background-color:rgb(78, 78, 78)"
+				<label>User profile</label>
+				<md-select
+					aria-label="profileSelect"
+					md-whiteframe="5dp"
+					ng-model="selectedProfile"
+					ng-change="changeProfile()"
+					style="min-width: 200px; background-color:rgb(78, 78, 78)"
+				>
+					<md-option
+						ng-repeat="userProfile in userProfiles"
+						ng-value="$index"
 					>
-						<md-option
-							ng-repeat="userProfile in userProfiles"
-							ng-value="$index"
-						>
-							{{userProfile.profileName}}
-						</md-option>
-					</md-select>
-					<md-button class="md-raised" ng-click="addProfile()">ADD PROFILE</md-button>
-					<md-button class="md-raised" ng-click="renameProfile()">RENAME PROFILE</md-button>
-					<md-button class="md-raised" ng-click="deleteProfile()" ng-disabled="userProfiles.length<=1">DELETE PROFILE</md-button>
+						{{userProfile.profileName}}
+					</md-option>
+				</md-select>
+				<md-button class="md-raised" ng-click="addProfile()">ADD PROFILE</md-button>
+				<md-button class="md-raised" ng-click="renameProfile()">RENAME PROFILE</md-button>
+				<md-button class="md-raised" ng-click="deleteProfile()" ng-disabled="userProfiles.length<=1">DELETE PROFILE</md-button>
+				<md-button ng-click="showHideAdvancedBrightnessOptions()" class="md-raised">
+					{{advancedBrightness ? 'Hide advanced brightness options' : 'Show advanced brightness options'}}
+				</md-button>
 			</div>
 			<div
 				layout-align="center center"
 				layout-padding
+				layout-margin
 				layout="column"
 				style="width:100%; margin: 10px; background-color: #333333;"
 				md-whiteframe="5dp"
@@ -87,36 +100,34 @@
 						</div>
 					</div>
 				</div>
-				<div layout="row">
-					<div layout="row">
-						<md-input-container ng-show="!advancedBrightness">
-							<md-select aria-label="brightnessSelect" ng-change="changeAllSegmentBrightness()" ng-model="selectedBrightness"
-								style="background-color: white;">
-								<md-option ng-value="0">OFF</md-option>
-								<md-option ng-value="1">LOW</md-option>
-								<md-option ng-value="2">MEDIUM</md-option>
-								<md-option ng-value="3">HIGH</md-option>
-								<md-option ng-value="4">ULTRA</md-option>
-								<md-option ng-value="5">ENOUGH</md-option>
-							</md-select>
-						</md-input-container>
-						<div layout="row" ng-show="advancedBrightness">
+				<div layout="row" md-whiteframe="5dp" style="min-width: 50%;" layout-align="center center" flex>
+					<md-input-container ng-show="!advancedBrightness" layout-margin>
+						<span>Select the brightness for the keyboard</span>
+						<select
+							aria-label="brightnessSelect"
+							ng-change="changeAllSegmentBrightness()"
+							ng-model="selectedBrightness"
+							style="background-color: white;"
+						>
+							<option ng-value="bright.brightnessValue" ng-repeat="bright in brightness">{{bright.brightnessName}}</md-option>
+						</select>
+					</md-input-container>
+					<div layout="column" ng-if="advancedBrightness" layout-align="center center">
+						<span style="margin-top: 8px;">Select the brightness for each segment of the keyboard</span>
+						<div layout="row">
 							<div ng-repeat="segment in segmentsOptions">
-								<md-input-container>
-									<md-select aria-label="brightnessSelect" ng-change="applySettings()" ng-model="segmentsOptions[$index].segmentBrightness" style="background-color: white;">
-										<md-option ng-value="0">OFF</md-option>
-										<md-option ng-value="1">LOW</md-option>
-										<md-option ng-value="2">MEDIUM</md-option>
-										<md-option ng-value="3">HIGH</md-option>
-										<md-option ng-value="4">ULTRA</md-option>
-										<md-option ng-value="5">ENOUGH</md-option>
-									</md-select>
+								<md-input-container style="width: 120px; margin: 0 0 8px 0;" layout-margin>
+									<select
+										aria-label="brightnessSelect"
+										ng-change="applySettings()"
+										ng-model="segment.segmentBrightness"
+										style="background-color: white;"
+									>
+										<option ng-value="bright.brightnessValue" ng-repeat="bright in brightness">{{bright.brightnessName}}</md-option>
+									</select>
 								</md-input-container>
 							</div>
 						</div>
-						<md-button ng-click="showHideAdvancedBrightnessOptions()">
-							{{advancedBrightness ? 'Hide advanced brightness options' : 'Show advanced brightness options'}}
-						</md-button>
 					</div>
 				</div>
 			</div>

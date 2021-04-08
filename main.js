@@ -32,9 +32,9 @@ app.on('ready', () => {
 			contextIsolation: false			
 		},
 		minHeight:625,
-		minWidth:1350,
+		minWidth:1510,
 		maxHeight:625,
-		maxWidth:1350,
+		maxWidth:1510,
 		autoHideMenuBar:true,
 		icon:path.join(__dirname, '/src/assets/icon.png')
 	});

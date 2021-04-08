@@ -1,5 +1,5 @@
 // The current version of your app.
-const APP_VERSION = require('../package.json').version
+const APP_VERSION = require('./package.json').version
 
 // The url that the application is going to query for new release
 const AUTO_UPDATE_URL =

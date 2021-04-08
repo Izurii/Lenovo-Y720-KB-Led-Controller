@@ -4,7 +4,7 @@
     "node": "=14.16.0"
   },
   "engineStrict": true,
-  "version": "1.0.0",
+  "version": "1.0.0-alpha",
   "description": "",
   "main": "main.js",
   "author": "Izurii Hootoh <izuriihootoh@gmail.com> (https://github.com/Izurii)",

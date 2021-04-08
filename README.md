@@ -1,1 +1,1 @@
-# Lenovo-Y720-KB-LED-Driver
+# Lenovo-Y720-KB-Led-Controller

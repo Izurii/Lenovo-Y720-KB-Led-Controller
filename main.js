@@ -1,5 +1,6 @@
 const { app, ipcMain, BrowserWindow, Tray, Menu, Notification } = require('electron');
 const { setKeyboardOptions } = require('./driver/index');
+const { exec, spawn } = require('child_process');
 
 const Store = require('electron-store');
 const path = require('path');
@@ -111,7 +112,9 @@ app.on('ready', () => {
 	});
 	app.allowRendererProcessReuse = false;
 	mainWindow.loadFile(path.join(__dirname, '/src/index.html'));
-
+	
+	listenerForHotKey();
+	
 	mainWindow.on('close', (event) => {
 		if(!trayQuit) {
 			event.preventDefault();
@@ -150,3 +153,31 @@ ipcMain.on('saveProfiles', (event, profiles) => {
 	store.set(profiles);
 	setMenu();
 });
+
+const listenerForHotKey = async () => {
+	exec('xinput --list | tee | grep "ITE Device(8910) Consumer Control" | grep "keyboard"', (error, stdout, stderr) => {
+		if (stdout) {
+			let deviceIdString = stdout.match(/(id=\d*)/g)[0];
+			let deviceId = parseInt(deviceIdString.match(/(\d+)/g)[0]);
+
+			let stream = spawn('xinput', ['--test', String(deviceId)]);
+			stream.stdout.on('data', (data) => {
+
+				let keyPressed = String(data).match(/(key\s*press\s*)(\d+)/g);
+				if (!keyPressed) return;
+				let keyPressedCode = parseInt(keyPressed[0].match(/(\d+)/g)[0]);
+				if (keyPressedCode!=248) return;
+
+				mainWindow.webContents.send('changeProfileHotKey', null);
+				
+			});
+			
+		} else if (stderr) {
+			throw Error("Xinput didn't find the correct device.");
+		} else if (error) {
+			throw Error(error.message);
+		}
+
+	});
+	
+};

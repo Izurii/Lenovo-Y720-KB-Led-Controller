@@ -66,7 +66,10 @@ const setMenu = () => {
 	userProfiles.profiles.forEach((item, index) => {
 		profiles.push({
 			label: item.profileName,
-			type: 'radio'
+			type: 'radio',
+			click: () => {
+				mainWindow.webContents.send('selectProfileTray', index);
+			}
 		});
 		if(userProfiles.selectedProfile==index) profiles[index].checked = true;
 	});

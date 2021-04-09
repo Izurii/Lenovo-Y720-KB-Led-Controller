@@ -100,11 +100,16 @@ const Brightness = [
 ];
 
 var app = angular.module('app', ['ngRoute', 'ngAnimate', 'ngMaterial']);
-
 app.filter('htmlTrusted', ['$sce', function($sce){
 	return function(text){ return $sce.trustAsHtml(text); };
 }])
 .controller('indexController', function ($scope, $sce, $mdDialog) {
+
+	ipcRenderer.on('selectProfileTray', (event, selectedProfile) => {
+		$scope.selectedProfile = selectedProfile;
+		$scope.changeProfile();
+		$scope.$apply();
+	});
 	
 	$scope.brightness = Brightness;
 	$scope.colors = Colors;

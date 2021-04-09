@@ -68,9 +68,9 @@
 				<md-button class="md-raised" ng-click="addProfile()">ADD PROFILE</md-button>
 				<md-button class="md-raised" ng-click="renameProfile()">RENAME PROFILE</md-button>
 				<md-button class="md-raised" ng-click="deleteProfile()" ng-disabled="userProfiles.length<=1">DELETE PROFILE</md-button>
-				<md-button ng-click="showHideAdvancedBrightnessOptions()" class="md-raised">
+				<!-- <md-button ng-click="showHideAdvancedBrightnessOptions()" class="md-raised">
 					{{advancedBrightness ? 'Hide advanced brightness options' : 'Show advanced brightness options'}}
-				</md-button>
+				</md-button> -->
 			</div>
 			<div
 				layout-align="center center"
@@ -101,7 +101,8 @@
 					</div>
 				</div>
 				<div layout="row" md-whiteframe="5dp" style="min-width: 50%;" layout-align="center center" flex>
-					<md-input-container ng-show="!advancedBrightness" layout-margin>
+					<!-- <md-input-container ng-show="!advancedBrightness" layout-margin> -->
+					<md-input-container layout-margin>
 						<span>Select the brightness for the keyboard</span>
 						<select
 							aria-label="brightnessSelect"
@@ -112,7 +113,7 @@
 							<option ng-value="bright.brightnessValue" ng-repeat="bright in brightness">{{bright.brightnessName}}</md-option>
 						</select>
 					</md-input-container>
-					<div layout="column" ng-if="advancedBrightness" layout-align="center center">
+					<!-- <div layout="column" ng-if="advancedBrightness" layout-align="center center">
 						<span style="margin-top: 8px;">Select the brightness for each segment of the keyboard</span>
 						<div layout="row">
 							<div ng-repeat="segment in segmentsOptions">
@@ -128,7 +129,7 @@
 								</md-input-container>
 							</div>
 						</div>
-					</div>
+					</div> -->
 				</div>
 			</div>
 		</div>

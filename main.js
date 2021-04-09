@@ -11,19 +11,83 @@ try {
 let mainWindow;
 let tray = null;
 
+var menu = [
+	{
+		label: 'Open',
+		type: 'normal',
+		click : () => {
+			mainWindow.show();
+		}
+	},
+	null,
+	{ label: 'Info', type: 'normal' },
+	{ label: 'Exit', type: 'normal', click: () => { app.quit();	}}
+];
+
 const store = new Store();
+
+const getProfilesFunc = () => {
+
+	let userProfiles = {
+		selectedProfile : store.get('selectedProfile'),
+		profiles : store.get('profiles')
+	};
+
+	if(!userProfiles.profiles) {
+		userProfiles.selectedProfile = 0;
+		userProfiles.profiles = [
+			{
+				profileName: 'Profile 1',
+				backlightMode: 3,
+				profileOptions: [
+					{ segmentColor: 0, segmentBrightness : 4},
+					{ segmentColor: 0, segmentBrightness : 4},
+					{ segmentColor: 0, segmentBrightness : 4},
+					{ segmentColor: 0, segmentBrightness : 4}
+				]
+			}
+		];
+		store.set(userProfiles);
+	}
+	
+	return userProfiles;
+
+};
+
+const setMenu = () => {
+	
+	let profiles = [];
+	let profilesSubmenu = {
+		label: 'Profiles',
+		type: 'submenu'
+	};
+
+	let userProfiles = getProfilesFunc();
+	userProfiles.profiles.forEach((item, index) => {
+		profiles.push({
+			label: item.profileName,
+			type: 'radio'
+		});
+		if(userProfiles.selectedProfile==index) profiles[index].checked = true;
+	});
+
+	profilesSubmenu = {
+		...profilesSubmenu,
+		submenu: profiles
+	};
+
+	let MenuArray = menu;
+	MenuArray[1] = profilesSubmenu;
+
+	tray.setContextMenu(Menu.buildFromTemplate(MenuArray));
+};
 
 app.on('ready', () => {
 	
-	// tray = new Tray('./assets/icon.png');
-	// const contextMenu = Menu.buildFromTemplate([
-	// 	{ label: 'Item1', type: 'radio' },
-	// 	{ label: 'Item2', type: 'radio' },
-	// 	{ label: 'Item3', type: 'radio', checked: true },
-	// 	{ label: 'Item4', type: 'radio' }
-	// ]);
-	// tray.setToolTip('Lenovo Y720 Keyboard Backlight Controller');
-	// tray.setContextMenu(contextMenu);
+	tray = new Tray('./src/assets/icon.png');
+	tray.setToolTip('Lenovo Y720 Keyboard Backlight Controller');
+
+	setMenu();
 
 	mainWindow = new BrowserWindow({
 		configName: 'user-settings',
@@ -59,33 +123,10 @@ ipcMain.on('setKB', (event, backlightMode, segmentOptions) => {
 });
 
 ipcMain.on('getUserProfiles', (event) => {
-	
-	let userProfiles = {
-		selectedProfile : store.get('selectedProfile'),
-		profiles : store.get('profiles')
-	};
-
-	if(!userProfiles.profiles) {
-		userProfiles.selectedProfile = 0;
-		userProfiles.profiles = [
-			{
-				profileName: 'Profile 1',
-				backlightMode: 3,
-				profileOptions: [
-					{ segmentColor: 0, segmentBrightness : 4},
-					{ segmentColor: 0, segmentBrightness : 4},
-					{ segmentColor: 0, segmentBrightness : 4},
-					{ segmentColor: 0, segmentBrightness : 4}
-				]
-			}
-		];
-		store.set(userProfiles);
-	}
-	
-	event.returnValue = userProfiles;
-
+	event.returnValue = getProfilesFunc();
 });
 
 ipcMain.on('saveProfiles', (event, profiles) => {
 	store.set(profiles);
+	setMenu();
 });

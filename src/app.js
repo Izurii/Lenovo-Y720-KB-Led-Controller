@@ -118,7 +118,7 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 	$scope.selectedSegment = 0;
 	$scope.selectedBrightness = 3;
 	$scope.backlightMode = 3;
-	$scope.advancedBrightness = false;
+	// $scope.advancedBrightness = false;
 
 	// Keys size config
 
@@ -160,7 +160,9 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 			selectedProfile: $scope.selectedProfile,
 			profiles: profilesArray
 		};
+		
 		ipcRenderer.send('saveProfiles', profiles);
+
 	};
 
 	$scope.applySettings = (backlightMode=null, profileOptions=null) => {
@@ -175,10 +177,10 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 	// User profile and segment options
 
 	const baseSegmentsOptions = [
-		{ segmentColor: 0, segmentBrightness : '4' },
-		{ segmentColor: 0, segmentBrightness : '4' },
-		{ segmentColor: 0, segmentBrightness : '4' },
-		{ segmentColor: 0, segmentBrightness : '4' }
+		{ segmentColor: 0, segmentBrightness : 4 },
+		{ segmentColor: 0, segmentBrightness : 4 },
+		{ segmentColor: 0, segmentBrightness : 4 },
+		{ segmentColor: 0, segmentBrightness : 4 }
 	];
 
 	var userSelectedProfile = userProfilesStore.profiles[userProfilesStore.selectedProfile];
@@ -329,10 +331,10 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 
 	// Brightness
 
-	$scope.showHideAdvancedBrightnessOptions = () => {
-		if($scope.advancedBrightness) $scope.advancedBrightness = false;
-		else $scope.advancedBrightness = true;
-	};
+	// $scope.showHideAdvancedBrightnessOptions = () => {
+	// 	if($scope.advancedBrightness) $scope.advancedBrightness = false;
+	// 	else $scope.advancedBrightness = true;
+	// };
 
 	$scope.changeAllSegmentBrightness = () => {
 		$scope.segmentsOptions.forEach((item, idx) => {

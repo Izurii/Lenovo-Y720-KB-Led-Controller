@@ -110,6 +110,14 @@ app.filter('htmlTrusted', ['$sce', function($sce){
 		$scope.changeProfile();
 		$scope.$apply();
 	});
+
+	ipcRenderer.on('changeProfileHotKey', () => {
+		let profileIndex = $scope.selectedProfile+1;
+		if(!userProfilesStore.profiles[profileIndex]) profileIndex = 0;
+		$scope.selectedProfile = profileIndex;
+		$scope.changeProfile();
+		$scope.$apply();
+	});
 	
 	$scope.brightness = Brightness;
 	$scope.colors = Colors;

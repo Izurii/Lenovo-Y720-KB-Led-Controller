@@ -4,28 +4,28 @@
     "node": "=14.16.0"
   },
   "engineStrict": true,
-  "version": "v1.0.2-alpha",
+  "version": "v1.7.23-genesis",
   "description": "",
   "main": "main.js",
   "author": "Izurii Hootoh <izuriihootoh@gmail.com> (https://github.com/Izurii)",
   "scripts": {
-	"postinstall": "electron-builder install-app-deps",
+    "postinstall": "electron-builder install-app-deps",
     "start": "electron-forge start",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "test": "echo \"Error: no test specified\" && exit 1",
     "package": "electron-forge package",
     "make": "electron-forge make",
-	"dist": "electron-builder"
+    "dist": "electron-builder"
   },
   "build": {
     "appId": "y720keyboardcontroller",
-	"icon": "src/assets/icon.png",
+    "icon": "src/assets/icon.png",
     "linux": {
       "target": [
         "AppImage",
         "deb"
       ],
-	  "executableName": "Y720KBController",
+      "executableName": "Y720KBController",
       "desktop": {
         "Name": "Lenovo Y720 Keyboard Led Controller",
         "Icon": "src/assets/icon.png",
@@ -56,6 +56,7 @@
     "angular-aria": "^1.8.2",
     "angular-material": "^1.2.2",
     "angular-route": "^1.8.2",
+    "auto-launch": "^5.0.5",
     "electron-store": "^7.0.2",
     "ioctl": "^2.0.2",
     "proper-lockfile": "^4.1.2"

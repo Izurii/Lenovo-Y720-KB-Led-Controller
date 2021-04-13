@@ -71,6 +71,7 @@ const getProfilesFunc = () => {
 
 	if(userProfiles.runAtLogin === undefined || userProfiles.runAtLogin === null) {
 		userProfiles.runAtLogin = true;
+		LedController.enable();
 		store.set(userProfiles);
 	}
 	
@@ -128,8 +129,8 @@ if(!app.requestSingleInstanceLock()) {
 
 		let profiles = getProfilesFunc();
 		let selectedProfile = profiles.profiles[profiles.selectedProfile];
-		
-		setKeyboardOptions(selectedProfile.backlightMode, selectedProfile.profileOptions, app.getAppPath('userData'));
+
+		setKeyboardOptions(selectedProfile.backlightMode, selectedProfile.profileOptions, app.getPath('userData'));
 		
 		tray = new Tray(frogIcon);
 		tray.setToolTip('Lenovo Y720 Keyboard Backlight Controller');

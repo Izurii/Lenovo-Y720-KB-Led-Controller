@@ -18,14 +18,14 @@
     "dist": "electron-builder"
   },
   "build": {
-    "appId": "y720keyboardcontroller",
+    "appId": "y720-kb-led-controller",
     "icon": "src/assets/icon.png",
     "linux": {
       "target": [
         "AppImage",
         "deb"
       ],
-      "executableName": "Y720KBController",
+      "executableName": "y720-kb-led-controller",
       "desktop": {
         "Name": "Lenovo Y720 Keyboard Led Controller",
         "Icon": "src/assets/icon.png",

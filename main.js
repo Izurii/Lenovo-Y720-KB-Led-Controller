@@ -5,6 +5,9 @@ const { exec, spawn } = require('child_process');
 const AutoLaunch = require('auto-launch');
 const Store = require('electron-store');
 const path = require('path');
+const firstRun = require('electron-first-run');
+
+const isFirstRun = firstRun();
 
 const LedController = new AutoLaunch({
 	name: 'Lenovo Y720 Led Controller',
@@ -117,8 +120,8 @@ const setMenu = () => {
 if(!app.requestSingleInstanceLock()) {
 	app.quit();
 } else {
-	app.on('second-instance', () => {
 
+	app.on('second-instance', () => {
 		if (mainWindow) {
 			if(mainWindow.isMinimized()) mainWindow.restore(); else if(!mainWindow.isVisible()) mainWindow.show();
 			mainWindow.focus();
@@ -129,6 +132,12 @@ if(!app.requestSingleInstanceLock()) {
 
 		let profiles = getProfilesFunc();
 		let selectedProfile = profiles.profiles[profiles.selectedProfile];
+
+		let backgroundNotification = new Notification({
+			icon: frogIcon,
+			title: 'Lenovo Y720 Keyboard Controller',
+			body: "I'm on the background, open me again using the tray menu"
+		});
 
 		setKeyboardOptions(selectedProfile.backlightMode, selectedProfile.profileOptions, app.getPath('userData'));
 		
@@ -149,6 +158,7 @@ if(!app.requestSingleInstanceLock()) {
 			maxWidth:1510,
 			autoHideMenuBar:true,
 			icon: frogIcon,
+			show: isFirstRun ? true : false
 		});
 
 		app.allowRendererProcessReuse = false;
@@ -160,11 +170,7 @@ if(!app.requestSingleInstanceLock()) {
 			if(!trayQuit) {
 				event.preventDefault();
 				mainWindow.hide();
-				new Notification({
-					icon: frogIcon,
-					title: 'Lenovo Y720 Keyboard Controller',
-					body: "I'm on the background, open me again using the tray menu"
-				}).show();
+				if (isFirstRun) backgroundNotification.show();
 			}
 		});
 

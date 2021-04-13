@@ -2,8 +2,14 @@ const { app, ipcMain, BrowserWindow, Tray, Menu, Notification } = require('elect
 const { setKeyboardOptions } = require('./driver/index');
 const { exec, spawn } = require('child_process');
 
+const AutoLaunch = require('auto-launch');
 const Store = require('electron-store');
 const path = require('path');
+
+const LedController = new AutoLaunch({
+	name: 'Lenovo Y720 Led Controller',
+	isHidden: true
+});
 
 try {
 	require('electron-reloader')(module)
@@ -24,7 +30,15 @@ var menu = [
 		}
 	},
 	null,
-	{ label: 'Info', type: 'normal' },
+	{ label: 'Start at login', type: 'checkbox', click : (item) => {
+		if(item.checked) {
+			LedController.enable();
+			store.set('runAtLogin', true);
+		} else {
+			LedController.disable();
+			store.set('runAtLogin', false);
+		}
+	}},
 	{ label: 'Separator', type: 'separator'},
 	{ label: 'Exit', type: 'normal', click: () => { trayQuit = true; app.quit(); }}
 ];
@@ -52,6 +66,12 @@ const getProfilesFunc = () => {
 				]
 			}
 		];
+		store.set(userProfiles);
+	}
+
+	if(userProfiles.runAtLogin === undefined || userProfiles.runAtLogin === null) {
+		userProfiles.runAtLogin = true;
+		LedController.enable();
 		store.set(userProfiles);
 	}
 	
@@ -87,47 +107,70 @@ const setMenu = () => {
 	let MenuArray = menu;
 	MenuArray[1] = profilesSubmenu;
 
-	tray.setContextMenu(Menu.buildFromTemplate(MenuArray));
+	let contextMenu = Menu.buildFromTemplate(MenuArray);
+	contextMenu.items[2].checked = userProfiles.runAtLogin;
+
+	tray.setContextMenu(contextMenu);
+
 };
 
-app.on('ready', () => {
-	
-	tray = new Tray(frogIcon);
-	tray.setToolTip('Lenovo Y720 Keyboard Backlight Controller');
+if(!app.requestSingleInstanceLock()) {
+	app.quit();
+} else {
+	app.on('second-instance', () => {
 
-	setMenu();
-
-	mainWindow = new BrowserWindow({
-		configName: 'user-settings',
-		webPreferences: {
-			nodeIntegration: true,
-			contextIsolation: false			
-		},
-		minHeight:625,
-		minWidth:1510,
-		maxHeight:625,
-		maxWidth:1510,
-		autoHideMenuBar:true,
-		icon: frogIcon,
-	});
-	app.allowRendererProcessReuse = false;
-	mainWindow.loadFile(path.join(__dirname, '/src/index.html'));
-	
-	listenerForHotKey();
-	
-	mainWindow.on('close', (event) => {
-		if(!trayQuit) {
-			event.preventDefault();
-			mainWindow.hide();
-			new Notification({
-				icon: frogIcon,
-				title: 'Lenovo Y720 Keyboard Controller',
-				body: "I'm on the background, open me again using the tray menu"
-			}).show();
+		if (mainWindow) {
+			if(mainWindow.isMinimized()) mainWindow.restore(); else if(!mainWindow.isVisible()) mainWindow.show();
+			mainWindow.focus();
 		}
 	});
 
-}); 
+	app.on('ready', () => {
+
+		let profiles = getProfilesFunc();
+		let selectedProfile = profiles.profiles[profiles.selectedProfile];
+
+		setKeyboardOptions(selectedProfile.backlightMode, selectedProfile.profileOptions, app.getPath('userData'));
+		
+		tray = new Tray(frogIcon);
+		tray.setToolTip('Lenovo Y720 Keyboard Backlight Controller');
+
+		setMenu();
+
+		mainWindow = new BrowserWindow({
+			configName: 'user-settings',
+			webPreferences: {
+				nodeIntegration: true,
+				contextIsolation: false			
+			},
+			minHeight:625,
+			minWidth:1510,
+			maxHeight:625,
+			maxWidth:1510,
+			autoHideMenuBar:true,
+			icon: frogIcon,
+		});
+
+		app.allowRendererProcessReuse = false;
+		mainWindow.loadFile(path.join(__dirname, '/src/index.html'));
+		
+		listenerForHotKey();
+		
+		mainWindow.on('close', (event) => {
+			if(!trayQuit) {
+				event.preventDefault();
+				mainWindow.hide();
+				new Notification({
+					icon: frogIcon,
+					title: 'Lenovo Y720 Keyboard Controller',
+					body: "I'm on the background, open me again using the tray menu"
+				}).show();
+			}
+		});
+
+	}); 
+
+}
 
 app.on('window-all-closed', (event) => {
 	if (process.platform !== 'darwin') {

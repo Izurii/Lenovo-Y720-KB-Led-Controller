@@ -1,4 +1,4 @@
-const { app, ipcMain, BrowserWindow, Tray, Menu, Notification } = require('electron');
+const { app, ipcMain, BrowserWindow, Tray, Menu, Notification, dialog } = require('electron');
 const { setKeyboardOptions } = require('./driver/index');
 const { exec, spawn } = require('child_process');
 
@@ -128,7 +128,7 @@ if(!app.requestSingleInstanceLock()) {
 		}
 	});
 
-	app.on('ready', () => {
+	app.on('ready', async () => {
 
 		let profiles = getProfilesFunc();
 		let selectedProfile = profiles.profiles[profiles.selectedProfile];
@@ -139,8 +139,9 @@ if(!app.requestSingleInstanceLock()) {
 			body: "I'm on the background, open me again using the tray menu"
 		});
 
-		setKeyboardOptions(selectedProfile.backlightMode, selectedProfile.profileOptions, app.getPath('userData'));
-		
+		let res = await setKeyboardOptions(selectedProfile.backlightMode, selectedProfile.profileOptions, app.getPath('userData'));
+		res!==true && dialog.showErrorBox('Error', res+"\n\nContact the dev for more information izuriihootoh@gmail.com");
+	
 		tray = new Tray(frogIcon);
 		tray.setToolTip('Lenovo Y720 Keyboard Backlight Controller');
 
@@ -190,8 +191,9 @@ app.on('activate', () => {
   }
 });
 
-ipcMain.on('setKB', (event, backlightMode, segmentOptions) => {
-	setKeyboardOptions(backlightMode, segmentOptions, app.getPath('userData'));
+ipcMain.on('setKB', async (event, backlightMode, segmentOptions) => {
+	let res = await setKeyboardOptions(backlightMode, segmentOptions, app.getPath('userData'));
+	res!==true && dialog.showErrorBox('Error', res+"\n\nContact the dev for more information izuriihootoh@gmail.com");
 });
 
 ipcMain.on('getUserProfiles', (event) => {

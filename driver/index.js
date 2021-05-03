@@ -112,4 +112,6 @@ const setKeyboardOptions = async (backLightMode, segmentsOptions, lockfilePath) 
 	}
 };
 
+exports.getHidrawDevices = getHidrawDevices;
+exports.findCorrectDevice = findCorrectDevice;
 exports.setKeyboardOptions = setKeyboardOptions;

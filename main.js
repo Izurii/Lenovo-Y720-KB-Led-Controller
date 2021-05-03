@@ -1,16 +1,18 @@
-const { app, ipcMain, BrowserWindow, Tray, Menu, Notification, dialog } = require('electron');
-const { setKeyboardOptions } = require('./driver/index');
+const { app, ipcMain, BrowserWindow, Tray, Menu, Notification, dialog, clipboard, nativeImage } = require('electron');
+const { getHidrawDevices, findCorrectDevice, setKeyboardOptions } = require('./driver/index');
 const { exec, spawn } = require('child_process');
 
 const AutoLaunch = require('auto-launch');
 const Store = require('electron-store');
 const path = require('path');
 const firstRun = require('electron-first-run');
-
+const fs = require('fs');
 const isFirstRun = firstRun();
+const constants = require('constants');
+const sudo = require('sudo-prompt');
 
 const LedController = new AutoLaunch({
-	name: 'Lenovo Y720 Led Controller',
+	name: 'Lenovo Y720 Keyboard LED Controller',
 	isHidden: true
 });
 
@@ -21,9 +23,9 @@ try {
 let mainWindow;
 let tray = null;
 
-var frogIcon = path.join(__dirname, '/src/assets/icon.png');
+var frogIcon = nativeImage.createFromPath(path.join(__dirname, '/resources/icon.png'));
 
-var trayQuit = false;
+var usualQuit = false;
 var menu = [
 	{
 		label: 'Open/Show',
@@ -43,7 +45,7 @@ var menu = [
 		}
 	}},
 	{ label: 'Separator', type: 'separator'},
-	{ label: 'Exit', type: 'normal', click: () => { trayQuit = true; app.quit(); }}
+	{ label: 'Exit', type: 'normal', click: () => { usualQuit = true; app.quit(); }}
 ];
 
 const store = new Store();
@@ -139,11 +141,8 @@ if(!app.requestSingleInstanceLock()) {
 			body: "I'm on the background, open me again using the tray menu"
 		});
 
-		let res = await setKeyboardOptions(selectedProfile.backlightMode, selectedProfile.profileOptions, app.getPath('userData'));
-		res!==true && dialog.showErrorBox('Error', res+"\n\nContact the dev for more information izuriihootoh@gmail.com");
-	
 		tray = new Tray(frogIcon);
-		tray.setToolTip('Lenovo Y720 Keyboard Backlight Controller');
+		tray.setToolTip('Lenovo Y720 Keyboard LED Controller');
 
 		setMenu();
 
@@ -162,13 +161,18 @@ if(!app.requestSingleInstanceLock()) {
 			show: isFirstRun ? true : false
 		});
 
+		await checkPermission();
+
 		app.allowRendererProcessReuse = false;
 		mainWindow.loadFile(path.join(__dirname, '/src/index.html'));
-		
+
+		let res = await setKeyboardOptions(selectedProfile.backlightMode, selectedProfile.profileOptions, app.getPath('userData'));
+		res!==true && genericError(res);
+
 		listenerForHotKey();
 		
 		mainWindow.on('close', (event) => {
-			if(!trayQuit) {
+			if(!usualQuit) {
 				event.preventDefault();
 				mainWindow.hide();
 				if (isFirstRun) backgroundNotification.show();
@@ -232,3 +236,74 @@ const listenerForHotKey = async () => {
 	});
 	
 };
+
+const testPermissionDeviceFile = async (deviceName) => {
+	return await new Promise((resolve, reject) => { fs.access(`/dev/${deviceName}`, constants.W_OK, (err => resolve(err))); });
+};
+
+const checkPermission = async () => {
+
+	let correctDevice = await findCorrectDevice(await getHidrawDevices());
+	let permissionDevice = await testPermissionDeviceFile(correctDevice);
+	let shellCommand = `chown $USER:$USER /dev/${correctDevice}`;
+
+	if(permissionDevice && permissionDevice.code=="EACCES") {
+
+		await new Promise((resolve, reject) => {
+
+			dialog.showMessageBox(mainWindow, {
+				type: 'info',
+				title: 'Permissions to write in the device file needed',
+				message: 'You need to copy and paste, or click the "Copy to clipboard" button, '+
+					`this into a terminal\n\nsudo ${shellCommand}`+
+					'\n\nAlternatively you can use the "Do it for me!" button.',
+				buttons: ['Cancel', 'Copy to clipboard', 'Do it for me!']
+			}).then(async (result) => {
+				if(!result.response) {
+					usualQuit = true; app.quit();
+				} else {
+					if (result.response==1) {
+						clipboard.writeText(shellCommand);
+						await checkPermissionDialog(correctDevice, resolve);
+					} else if (result.response==2) {
+						sudo.exec(shellCommand, {name: 'Lenovo Y720 Keyboard LED Controller'}, async (err, stdout, stderr) => {
+							if (err) genericError(err.message);
+							await checkPermissionDialog(correctDevice, resolve);
+						});
+					}
+				}
+			});
+		});
+	}
+}
+
+const genericError = (error) => {
+	dialog.showErrorBox('Error', error+"\n\nContact the dev for more information izuriihootoh@gmail.com");
+	usualQuit = true; app.quit();
+};
+
+const checkPermissionDialog = async (deviceName, resolve) => {
+	dialog.showMessageBox(mainWindow, {
+		type: 'info',
+		title: 'Checking permission to write device file',
+		message: 'Use the buttons to check if the permission was granted correctly.',
+		buttons: ['Cancel', 'Check permission']
+	}).then(async (result) => {
+		if(!result.response) {
+			usualQuit = true; app.quit();
+		} else if(result.response==1) {
+			let permissionDevice = await testPermissionDeviceFile(deviceName);
+			if(permissionDevice && permissionDevice.code=="EACCES") {
+				dialog.showErrorBox('Error', 'Permission not detected!');
+				await checkPermissionDialog(deviceName, resolve);
+			} else {
+				dialog.showMessageBox(mainWindow, {
+					type: 'info',
+					title: 'Success!',
+					message: 'Permission granted you can now proceed to use the software.'
+				});
+				resolve();
+			}
+		}
+	});
+}

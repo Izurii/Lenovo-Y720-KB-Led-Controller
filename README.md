@@ -16,7 +16,7 @@ Download the latest version here: [Releases](https://github.com/Izurii/Lenovo-Y7
 You can use the AppImage to run just once the software using this in a terminal with the folder you downloaded the software open
 
 ```
-./y720-kb-led-controller-x.AppImage
+./Lenovo Y720 Keyboard LED Controller-x.AppImage
 ```
 
 Or you can install the deb packages using:

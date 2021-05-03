@@ -1,4 +1,4 @@
-const { app, ipcMain, BrowserWindow, Tray, Menu, Notification, dialog, clipboard } = require('electron');
+const { app, ipcMain, BrowserWindow, Tray, Menu, Notification, dialog, clipboard, nativeImage } = require('electron');
 const { getHidrawDevices, findCorrectDevice, setKeyboardOptions } = require('./driver/index');
 const { exec, spawn } = require('child_process');
 
@@ -12,7 +12,7 @@ const constants = require('constants');
 const sudo = require('sudo-prompt');
 
 const LedController = new AutoLaunch({
-	name: 'Lenovo Y720 Led Controller',
+	name: 'Lenovo Y720 Keyboard LED Controller',
 	isHidden: true
 });
 
@@ -23,7 +23,7 @@ try {
 let mainWindow;
 let tray = null;
 
-var frogIcon = path.join(__dirname, '/src/assets/icon.png');
+var frogIcon = nativeImage.createFromPath(path.join(__dirname, '/resources/icon.png'));
 
 var usualQuit = false;
 var menu = [
@@ -142,7 +142,7 @@ if(!app.requestSingleInstanceLock()) {
 		});
 
 		tray = new Tray(frogIcon);
-		tray.setToolTip('Lenovo Y720 Keyboard Backlight Controller');
+		tray.setToolTip('Lenovo Y720 Keyboard LED Controller');
 
 		setMenu();
 

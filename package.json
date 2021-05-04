@@ -46,7 +46,6 @@
   },
   "homepage": "https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller#readme",
   "devDependencies": {
-    "@electron-forge/cli": "*",
     "electron": "^12.0.2",
     "electron-builder": "^22.10.5",
     "electron-reloader": "^1.2.0"

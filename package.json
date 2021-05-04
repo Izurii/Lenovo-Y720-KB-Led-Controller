@@ -12,7 +12,7 @@
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "dist": "electron-builder",
-    "release": "./node_modules/.bin/electron-builder"
+    "release": "electron-builder"
   },
   "build": {
     "appId": "y720-kb-led-controller",

@@ -16,6 +16,7 @@ jobs:
       
       - name: Build and Release
         run: |
+          npm install
           npm install -g electron-builder
           npm run release
         env:

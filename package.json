@@ -11,7 +11,8 @@
   "author": "Izurii Hootoh <izuriihootoh@gmail.com> (https://github.com/Izurii)",
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "release": "electron-builder"
   },
   "build": {
     "appId": "y720-kb-led-controller",
@@ -26,7 +27,8 @@
       "executableName": "LenovoY720KeyboardController",
       "desktop": {
         "Categories": "Utility"
-      }
+      },
+      "publish": ["github"]
     },
     "files": [
       "resources/*",

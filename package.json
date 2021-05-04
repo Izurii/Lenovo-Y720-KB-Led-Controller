@@ -13,7 +13,7 @@
     "preinstall": "npm i -g electron-builder",
     "postinstall": "electron-builder install-app-deps",
     "dist": "electron-builder",
-    "release": "electron-builder --publish=always"
+    "release": "electron-builder"
   },
   "build": {
     "appId": "y720-kb-led-controller",
@@ -29,7 +29,12 @@
       "desktop": {
         "Categories": "Utility"
       },
-      "publish": ["github"]
+      "publish": [
+        {
+          "provider": "github",
+          "releaseType": "release"
+        }
+      ]
     },
     "files": [
       "resources/*",

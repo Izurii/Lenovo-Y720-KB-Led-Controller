@@ -1,0 +1,25 @@
+name: Release App
+on:
+  push:
+    branches: [ master ]
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+          uses: actions/checkout@v1
+    
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10
+
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+
+      - name: Build/release App
+        uses: samuelmeuli/action-electron-builder@v1
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          release: ${{steps.package-version.outputs.current-version}}

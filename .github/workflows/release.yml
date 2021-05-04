@@ -13,13 +13,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.16.0
-
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
-
-      - name: Build/release App
-        uses: samuelmeuli/action-electron-builder@v1
-        with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          release: ${{steps.package-version.outputs.current-version}}
+      - run: num run release
+      - env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}

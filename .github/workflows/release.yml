@@ -15,7 +15,8 @@ jobs:
           node-version: 14.16.0
       
       - name: Build and Release
-        run: npm install -g electron-builder
-        run: npm run release
+        run: |
+          npm install -g electron-builder
+          npm run release
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}

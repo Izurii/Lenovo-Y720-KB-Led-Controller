@@ -2,7 +2,7 @@ const { app, ipcMain, BrowserWindow, Tray, Menu, Notification, dialog, clipboard
 const { getHidrawDevices, findCorrectDevice, setKeyboardOptions } = require('./driver/index');
 const { exec, spawn } = require('child_process');
 
-const AutoLaunch = require('auto-launch');
+const AutoLaunch = require('easy-auto-launch');
 const Store = require('electron-store');
 const path = require('path');
 const firstRun = require('electron-first-run');

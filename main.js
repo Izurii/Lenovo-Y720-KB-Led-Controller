@@ -12,7 +12,7 @@ const constants = require('constants');
 const sudo = require('sudo-prompt');
 
 const LedController = new AutoLaunch({
-	name: 'Lenovo Y720 Keyboard LED Controller',
+	name: 'y720-kb-led-controller',
 	isHidden: true
 });
 

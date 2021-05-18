@@ -4,7 +4,7 @@
   "engines": {
     "node": "=14.16.0"
   },
-  "engineStrict": false,
+  "engineStrict": true,
   "version": "v1.8.60-apocalypse",
   "description": "Software to control the keyboard backlight rgb leds of Lenovo Legion Y720 notebook.",
   "main": "main.js",
@@ -63,6 +63,7 @@
     "angular-animate": "^1.8.2",
     "angular-aria": "^1.8.2",
     "angular-material": "^1.2.2",
+    "angular-messages" : "^1.7.2",
     "angular-route": "^1.8.2",
     "angular-messages" : "^1.7.2",
     "easy-auto-launch": "^6.0.0",

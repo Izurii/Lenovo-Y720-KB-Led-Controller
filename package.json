@@ -5,7 +5,7 @@
     "node": "=14.16.0"
   },
   "engineStrict": true,
-  "version": "v1.8.40-apocalypse",
+  "version": "v1.8.60-apocalypse",
   "description": "Software to control the keyboard backlight rgb leds of Lenovo Legion Y720 notebook.",
   "main": "main.js",
   "author": "Izurii Hootoh <izuriihootoh@gmail.com> (https://github.com/Izurii)",

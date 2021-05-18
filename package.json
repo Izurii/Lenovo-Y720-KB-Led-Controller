@@ -10,7 +10,7 @@
   "main": "main.js",
   "author": "Izurii Hootoh <izuriihootoh@gmail.com> (https://github.com/Izurii)",
   "scripts": {
-    "preinstall": "npm i -g electron-builder",
+    "preinstall": "yarn global add electron-builder",
     "postinstall": "electron-builder install-app-deps",
     "dist": "electron-builder",
     "release": "electron-builder",
@@ -65,7 +65,8 @@
     "angular-material": "^1.2.2",
     "angular-messages" : "^1.7.2",
     "angular-route": "^1.8.2",
-    "easy-auto-launch": "^5.0.6",
+    "angular-messages" : "^1.7.2",
+    "easy-auto-launch": "^6.0.0",
     "electron-first-run": "^3.0.0",
     "electron-store": "^7.0.2",
     "ioctl": "^2.0.2",

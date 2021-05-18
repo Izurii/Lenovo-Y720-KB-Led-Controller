@@ -29,6 +29,12 @@ sudo dpkg -i y720-kb-led-controller-x.deb
 
 ```
 git clone https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller
-npm install
-npm run dist
+yarn
+yarn dist
+```
+
+# How to start using yarn
+
+```
+yarn start
 ```

@@ -5,7 +5,10 @@ const lockfile = require('proper-lockfile');
 const ioctl = require('ioctl');
 const { SegmentBrightness, SegmentColor, BacklightMode } = require('./options');
 
-const HID_NAME = 'HID_NAME=ITE33D1:00 048D:837A';
+const HID_NAME = [
+	'HID_NAME=ITE33D1:00 048D:837A',
+	'HID_NAME=ITE Tech. Inc. ITE Device(8910)'
+];
 const HidCommand = 0xC0114806;
 const HidrawClassesPath = '/sys/class/hidraw/';
 
@@ -24,7 +27,7 @@ const findCorrectDevice = async (listOfDevices) => {
 	var correctDevice;
 	listOfDevices.forEach((device, index) => {
 		let dev_file = fs.readFileSync(`${HidrawClassesPath}${device}/device/uevent`, { encoding: 'utf-8' });
-		if (dev_file.includes(HID_NAME))
+		if (HID_NAME.some(x => dev_file.includes(x)))
 			correctDevice = device
 	});
 	return correctDevice;

@@ -32,3 +32,9 @@ git clone https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller
 yarn
 yarn dist
 ```
+
+# How to start using yarn
+
+```
+yarn start
+```

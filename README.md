@@ -38,3 +38,6 @@ yarn dist
 ```
 yarn start
 ```
+
+[depstat-url]: https://david-dm.org/Izurii/Lenovo-Y720-KB-Led-Controller
+[depstat-image]: https://david-dm.org/Izurii/Lenovo-Y720-KB-Led-Controller.svg?style=flat

@@ -297,28 +297,28 @@ const checkPermission = async () => {
 						'You need to copy and paste, or click the "Copy to clipboard" button, ' +
 						`this into a terminal\n\nsudo ${shellCommand}` +
 						'\n\nAlternatively you can use the "Do it for me!" button.',
-					buttons: ["Cancel", "Copy to clipboard", "Do it for me!"],
+					buttons: ["Do it for me!", "Copy to clipboard", "Cancel"],
 				})
 				.then(async (result) => {
 					if (!result.response) {
-						usualQuit = true;
-						app.quit();
+						sudo.exec(
+							shellCommand,
+							{ name: "Lenovo Y720 Keyboard LED Controller" },
+							async (err, stdout, stderr) => {
+								if (err) genericError(err.message);
+								await checkPermissionDialog(
+									correctDevice,
+									resolve
+								);
+							}
+						);
 					} else {
 						if (result.response == 1) {
 							clipboard.writeText(shellCommand);
 							await checkPermissionDialog(correctDevice, resolve);
 						} else if (result.response == 2) {
-							sudo.exec(
-								shellCommand,
-								{ name: "Lenovo Y720 Keyboard LED Controller" },
-								async (err, stdout, stderr) => {
-									if (err) genericError(err.message);
-									await checkPermissionDialog(
-										correctDevice,
-										resolve
-									);
-								}
-							);
+							usualQuit = true;
+							app.quit();
 						}
 					}
 				});
@@ -343,13 +343,10 @@ const checkPermissionDialog = async (deviceName, resolve) => {
 			title: "Checking permission to write device file",
 			message:
 				"Use the buttons to check if the permission was granted correctly.",
-			buttons: ["Cancel", "Check permission"],
+			buttons: ["Check permission", "Cancel"],
 		})
 		.then(async (result) => {
 			if (!result.response) {
-				usualQuit = true;
-				app.quit();
-			} else if (result.response == 1) {
 				let permissionDevice = await testPermissionDeviceFile(
 					deviceName
 				);
@@ -365,6 +362,9 @@ const checkPermissionDialog = async (deviceName, resolve) => {
 					});
 					resolve();
 				}
+			} else if (result.response == 1) {
+				usualQuit = true;
+				app.quit();
 			}
 		});
 };

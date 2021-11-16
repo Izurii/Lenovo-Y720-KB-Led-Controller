@@ -1,76 +1,79 @@
 {
-  "productName": "Lenovo Y720 Keyboard LED Controller",
-  "name": "y720-kb-led-controller",
-  "engines": {
-    "node": "=14.16.0"
-  },
-  "engineStrict": true,
-  "version": "v1.8.60-apocalypse",
-  "description": "Software to control the keyboard backlight rgb leds of Lenovo Legion Y720 notebook.",
-  "main": "main.js",
-  "author": "Izurii Hootoh <izuriihootoh@gmail.com> (https://github.com/Izurii)",
-  "scripts": {
-    "preinstall": "yarn global add electron-builder",
-    "postinstall": "electron-builder install-app-deps",
-    "dist": "electron-builder",
-    "release": "electron-builder",
-    "start": "electron ."
-  },
-  "build": {
-    "appId": "y720-kb-led-controller",
-    "icon": "resources/icon.png",
-    "linux": {
-      "target": [
-        "deb",
-        "AppImage"
-      ],
-      "category": "Utility",
-      "icon": "./resources/icons",
-      "desktop": {
-        "Categories": "Utility"
-      },
-      "publish": [
-        {
-          "provider": "github",
-          "releaseType": "release"
-        }
-      ]
-    },
-    "files": [
-      "resources/*",
-      "driver/*",
-      "main.js",
-      "src/**/*"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller.git"
-  },
-  "keywords": [],
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller/issues"
-  },
-  "homepage": "https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller#readme",
-  "devDependencies": {
-    "electron": "^12.0.2",
-    "electron-builder": "^22.10.5",
-    "electron-reloader": "^1.2.0"
-  },
-  "dependencies": {
-    "angular": "^1.8.2",
-    "angular-animate": "^1.8.2",
-    "angular-aria": "^1.8.2",
-    "angular-material": "^1.2.2",
-    "angular-messages" : "^1.7.2",
-    "angular-route": "^1.8.2",
-    "angular-messages" : "^1.7.2",
-    "easy-auto-launch": "^6.0.0",
-    "electron-first-run": "^3.0.0",
-    "electron-store": "^7.0.2",
-    "ioctl": "^2.0.2",
-    "proper-lockfile": "^4.1.2",
-    "sudo-prompt": "^9.2.1"
-  }
+	"productName": "Lenovo Y720 Keyboard LED Controller",
+	"name": "y720-kb-led-controller",
+	"engines": {
+		"node": "=14.16.0"
+	},
+	"engineStrict": true,
+	"version": "v1.8.90-apocalypse",
+	"description": "Software to control the keyboard backlight rgb leds of Lenovo Legion Y720 notebook.",
+	"main": "main.js",
+	"author": "Izurii Hootoh <izuriihootoh@gmail.com> (https://github.com/Izurii)",
+	"scripts": {
+		"preinstall": "yarn global add electron-builder",
+		"postinstall": "electron-builder install-app-deps",
+		"dist": "electron-builder",
+		"release": "electron-builder",
+		"start": "electron ."
+	},
+	"build": {
+		"appId": "y720-kb-led-controller",
+		"icon": "resources/icon.png",
+		"linux": {
+			"target": [
+				"deb",
+				"AppImage"
+			],
+			"category": "Utility",
+			"icon": "./resources/icons",
+			"desktop": {
+				"Categories": "Utility"
+			},
+			"publish": [
+				{
+					"provider": "github",
+					"releaseType": "release"
+				}
+			]
+		},
+		"files": [
+			"resources/*",
+			"driver/*",
+			"main.js",
+			"src/**/*"
+		]
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller.git"
+	},
+	"keywords": [],
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller/issues"
+	},
+	"homepage": "https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller#readme",
+	"devDependencies": {
+		"@types/proper-lockfile": "^4.1.2",
+		"@types/angular": "^1.8.3",
+		"@types/angular-material": "^1.1.73",
+		"@types/angular-route": "^1.7.2",
+		"electron": "^12.0.2",
+		"electron-builder": "^22.10.5",
+		"electron-reloader": "^1.2.0"
+	},
+	"dependencies": {
+		"angular": "^1.8.2",
+		"angular-animate": "^1.8.2",
+		"angular-aria": "^1.8.2",
+		"angular-material": "^1.2.2",
+		"angular-messages": "^1.7.2",
+		"angular-route": "^1.8.2",
+		"easy-auto-launch": "^6.0.0",
+		"electron-first-run": "^3.0.0",
+		"electron-store": "^7.0.2",
+		"ioctl": "^2.0.2",
+		"proper-lockfile": "^4.1.2",
+		"sudo-prompt": "^9.2.1"
+	}
 }

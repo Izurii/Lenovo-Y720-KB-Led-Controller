@@ -18,7 +18,7 @@ const SegmentColor = {
 	WEB_ORANGE: 16,
 	INTERNATIONAL_ORANGE: 17,
 	WHITE: 18,
-	NO_COLOR: 19
+	NO_COLOR: 19,
 };
 
 const SegmentBrightness = {
@@ -27,7 +27,7 @@ const SegmentBrightness = {
 	MEDIUM: 2,
 	HIGH: 3,
 	ULTRA: 4,
-	ENOUGH: 5
+	ENOUGH: 5,
 };
 
 const BacklightMode = {
@@ -35,7 +35,7 @@ const BacklightMode = {
 	BREATH: 1,
 	SMOOTH: 2,
 	ALWAYS_ON: 3,
-	WAVE: 4
+	WAVE: 4,
 };
 
 exports.BacklightMode = BacklightMode;

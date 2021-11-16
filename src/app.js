@@ -344,10 +344,12 @@ app.filter("htmlTrusted", [
 		if ($scope.userProfiles.length <= 1) return;
 
 		$scope.userProfiles.splice($scope.selectedProfile, 1);
-		$scope.selectedProfile = $scope.selectedProfile - 1;
+		$scope.selectedProfile = $scope.selectedProfile
+			? $scope.selectedProfile - 1
+			: 0;
 		$scope.changeProfile();
-
 		$scope.saveProfiles();
+		$scope.$apply();
 	};
 
 	$scope.renameProfile = () => {

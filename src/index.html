@@ -59,7 +59,7 @@
 					style="min-width: 200px; background-color:rgb(78, 78, 78)"
 				>
 					<md-option
-						ng-repeat="userProfile in userProfiles"
+						ng-repeat="userProfile in userProfiles track by $index"
 						ng-value="$index"
 					>
 						{{userProfile.profileName}}

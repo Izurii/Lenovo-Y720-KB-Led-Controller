@@ -330,7 +330,7 @@ app.filter("htmlTrusted", [
 			(result) => {
 				$scope.userProfiles.push({
 					profileName: result,
-					profileOptions: baseSegmentsOptions,
+					profileOptions: [...baseSegmentsOptions],
 					backlightMode: 3,
 				});
 				$scope.selectedProfile = $scope.userProfiles.length - 1;

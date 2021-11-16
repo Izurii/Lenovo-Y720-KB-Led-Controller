@@ -61,6 +61,25 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
+"@types/angular-material@^1.1.73":
+  version "1.1.73"
+  resolved "https://registry.yarnpkg.com/@types/angular-material/-/angular-material-1.1.73.tgz#c6033f1c0f1f5c67139fe844277f1e7830abd38e"
+  integrity sha512-XR6o9iPxLXIUARRdUnSXlIUNzmv/TtmVY9OeX6o/m+ou4UnIh0rrXG7Cf/kT9ZUfneHt+RyqpIbbkiUEM31nDw==
+  dependencies:
+    "@types/angular" "*"
+
+"@types/angular-route@^1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@types/angular-route/-/angular-route-1.7.2.tgz#919bfc829d9c4fe751a1d56deb31d8cbbebcddf3"
+  integrity sha512-Yc5ToBQpW7/v8tmQOlUzOYQPT/uQvfEuovNreM2YCOAQSlQGwpMxFxcYATxe4tLXbdmMZsbnlTZAbDaD6O/M1w==
+  dependencies:
+    "@types/angular" "*"
+
+"@types/angular@*", "@types/angular@^1.8.3":
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/@types/angular/-/angular-1.8.3.tgz#97602244b685113ce9dc27823471b67d28f5ba3e"
+  integrity sha512-vgc5Z+TD07DT7NEUjFm6XMp0kEbGXIa95XmOL5IiHXR9LdrJpcdDh3jl1nCuZbWyzFn5/1OqtMfomcnA1sUFXQ==
+
 "@types/debug@^4.1.5":
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.5.tgz#b14efa8852b7768d898906613c23f688713e02cd"
@@ -103,6 +122,18 @@
   dependencies:
     "@types/node" "*"
     xmlbuilder ">=11.0.1"
+
+"@types/proper-lockfile@^4.1.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@types/proper-lockfile/-/proper-lockfile-4.1.2.tgz#49537cee7134055ee13a1833b76a1c298f39bb26"
+  integrity sha512-kd4LMvcnpYkspDcp7rmXKedn8iJSCoa331zRRamUp5oanKt/CefbEGPQP7G89enz7sKD4bvsr8mHSsC8j5WOvA==
+  dependencies:
+    "@types/retry" "*"
+
+"@types/retry@*":
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/@types/retry/-/retry-0.12.1.tgz#d8f1c0d0dc23afad6dc16a9e993a0865774b4065"
+  integrity sha512-xoDlM2S4ortawSWORYqsdU+2rxdh4LRW9ytc3zmT37RIKQh6IHyKwwtKhKis9ah8ol07DCkZxPt8BBvPjC6v4g==
 
 "@types/verror@^1.10.3":
   version "1.10.4"

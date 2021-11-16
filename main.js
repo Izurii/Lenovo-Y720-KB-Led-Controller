@@ -248,7 +248,7 @@ ipcMain.on("saveProfiles", (event, profiles) => {
 
 const listenerForHotKey = async () => {
 	exec(
-		'xinput --list | tee | grep "ITE Device(8910) Consumer Control" | grep "keyboard"',
+		'xinput --list | tee | grep -v "Radio" | grep "ITE.*8910.*keyboard"',
 		(error, stdout, stderr) => {
 			if (stdout) {
 				let deviceIdString = stdout.match(/(id=\d*)/g)[0];

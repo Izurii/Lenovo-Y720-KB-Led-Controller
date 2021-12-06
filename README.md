@@ -30,13 +30,7 @@ sudo dpkg -i y720-kb-led-controller-x.deb
 
 Create a file called `/etc/udev/rules.d/99-hidraw-permissions.rules`:
 ```
-KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0664", GROUP="plugdev"
-```
-
-Add your user to the `plugdev` group:
-
-```
-usermod -a -G plugdev $USER
+SUBSYSTEM=="hidraw", ATTRS{name}=="ITE33D1:00", MODE="0666"
 ```
 
 Reboot.

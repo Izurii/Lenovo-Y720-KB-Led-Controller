@@ -26,6 +26,15 @@ Or you can install the deb packages using:
 sudo dpkg -i y720-kb-led-controller-x.deb
 ```
 
+# How to grant access to /dev/hidraw0 automatically
+
+Create a file called `/etc/udev/rules.d/99-hidraw-permissions.rules`:
+```
+SUBSYSTEM=="hidraw", ATTRS{name}=="ITE33D1:00", MODE="0666"
+```
+
+Reboot.
+
 # How to build it yourself
 
 ```

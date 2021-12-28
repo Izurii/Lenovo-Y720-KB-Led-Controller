@@ -22,7 +22,7 @@ const sudo = require("sudo-prompt");
 
 // LIBS
 const { setKeyboardOptions, getHidrawDevice } = require("./libs/leds");
-const { listenHotkey } = require("./libs/hotkey");
+const { listenHotkey, getInputDevice } = require("./libs/hotkey");
 
 const LedController = new AutoLaunch({
 	name: "y720-kb-led-controller",
@@ -186,7 +186,8 @@ if (!app.requestSingleInstanceLock()) {
 			show: isFirstRun ? true : false,
 		});
 
-		await checkPermission();
+		await checkHidrawPermission();
+		await checkInputPermission();
 
 		app.allowRendererProcessReuse = false;
 		mainWindow.loadFile(path.join(__dirname, "/src/index.html"));
@@ -242,38 +243,50 @@ ipcMain.on("saveProfiles", (event, profiles) => {
 	setMenu();
 });
 
-const testPermissionDeviceFile = async (deviceName) => {
+const can = async (path, permission) => {
 	return await new Promise((resolve, reject) => {
-		fs.access(`/dev/${deviceName}`, constants.W_OK, (err) => resolve(err));
+		fs.access(`${path}`, permission, (err) => resolve(err));
 	});
 };
 
-const checkPermission = async () => {
-	let correctDevice = await getHidrawDevice();
-	let permissionDevice = await testPermissionDeviceFile(correctDevice);
-	let shellCommand = `chown $USER:$USER /dev/${correctDevice}`;
+const checkHidrawPermission = async () => {
+	const hidrawDevice = await getHidrawDevice();
+	await checkPermission(`/dev/${hidrawDevice}`, constants.W_OK);
+};
+
+const checkInputPermission = async () => {
+	const inputDevice = await getInputDevice();
+	await checkPermission(`/dev/input/${inputDevice}`, constants.R_OK);
+};
+
+const checkPermission = async (path, permission) => {
+	let permissionDevice = await can(path, permission);
+	let shellCommand = `sudo chmod 666 ${path}`;
 
 	if (permissionDevice && permissionDevice.code == "EACCES") {
 		await new Promise((resolve, reject) => {
 			dialog
 				.showMessageBox(mainWindow, {
 					type: "info",
-					title: "Permissions to write in the device file needed",
+					title: "Permissions to write/read needed",
 					message:
 						'You need to copy and paste, or click the "Copy to clipboard" button, ' +
-						`this into a terminal\n\nsudo ${shellCommand}` +
-						'\n\nAlternatively you can use the "Do it for me!" button.',
+						`this into a terminal\n\n ${shellCommand}` +
+						'\n\nAlternatively you can use the "Do it for me!" button.' +
+						'\n\nIf you click "Do it for me!" you will be prompted to enter your password.' +
+						"\n\n To make it permanent, you need to follow the instructions on the readme page",
 					buttons: ["Do it for me!", "Copy to clipboard", "Cancel"],
 				})
 				.then(async (result) => {
 					if (!result.response) {
 						sudo.exec(
-							shellCommand,
+							shellCommand.replace("sudo ", ""),
 							{ name: "Lenovo Y720 Keyboard LED Controller" },
 							async (err, stdout, stderr) => {
 								if (err) genericError(err.message);
 								await checkPermissionDialog(
-									correctDevice,
+									path,
+									permission,
 									resolve
 								);
 							}
@@ -281,7 +294,11 @@ const checkPermission = async () => {
 					} else {
 						if (result.response == 1) {
 							clipboard.writeText(shellCommand);
-							await checkPermissionDialog(correctDevice, resolve);
+							await checkPermissionDialog(
+								path,
+								permission,
+								resolve
+							);
 						} else if (result.response == 2) {
 							usualQuit = true;
 							app.quit();
@@ -292,33 +309,21 @@ const checkPermission = async () => {
 	}
 };
 
-const genericError = (error) => {
-	dialog.showErrorBox(
-		"Error",
-		error +
-			"\n\nContact the dev for more information izuriihootoh@gmail.com"
-	);
-	usualQuit = true;
-	app.quit();
-};
-
-const checkPermissionDialog = async (deviceName, resolve) => {
+const checkPermissionDialog = async (path, permission, resolve) => {
 	dialog
 		.showMessageBox(mainWindow, {
 			type: "info",
-			title: "Checking permission to write device file",
+			title: "Checking permission to write/read file",
 			message:
 				"Use the buttons to check if the permission was granted correctly.",
 			buttons: ["Check permission", "Cancel"],
 		})
 		.then(async (result) => {
 			if (!result.response) {
-				let permissionDevice = await testPermissionDeviceFile(
-					deviceName
-				);
+				let permissionDevice = await can(path, permission);
 				if (permissionDevice && permissionDevice.code == "EACCES") {
 					dialog.showErrorBox("Error", "Permission not detected!");
-					await checkPermissionDialog(deviceName, resolve);
+					await checkPermissionDialog(path, resolve);
 				} else {
 					dialog.showMessageBox(mainWindow, {
 						type: "info",
@@ -333,4 +338,14 @@ const checkPermissionDialog = async (deviceName, resolve) => {
 				app.quit();
 			}
 		});
+};
+
+const genericError = (error) => {
+	dialog.showErrorBox(
+		"Error",
+		error +
+			"\n\nContact the dev for more information izuriihootoh@gmail.com"
+	);
+	usualQuit = true;
+	app.quit();
 };

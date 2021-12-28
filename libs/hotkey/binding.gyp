@@ -12,11 +12,9 @@
                 'CLANG_CXX_LIBRARY': 'libc++',
                 'MACOSX_DEPLOYMENT_TARGET': '10.7'
             },
-            'link_settings': {
-                'libraries': [
-                    '-levdev'
-                ]
-            },
+            'libraries': [
+                '<(module_root_dir)/libs/libevdev.so',
+            ],
             'msvs_settings': {
                 'VCCLCompilerTool': {'ExceptionHandling': 1},
             },

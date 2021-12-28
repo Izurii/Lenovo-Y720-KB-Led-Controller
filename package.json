@@ -14,7 +14,8 @@
 		"postinstall": "electron-builder install-app-deps",
 		"dist": "electron-builder",
 		"release": "electron-builder",
-		"start": "electron ."
+		"start": "electron .",
+		"build-libs": "cd ./libs/leds && yarn && cd ../hotkey && yarn"
 	},
 	"build": {
 		"appId": "y720-kb-led-controller",

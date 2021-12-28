@@ -41,8 +41,23 @@ Reboot your PC or use this command to reload and trigger the new udev rules `sud
 
 # How to build it yourself
 
+1. First clone the repo
+
 ```
 git clone https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller
+```
+
+2. Build the libs
+
+```
+yarn build-libs
+```
+
+Or you can enter the folder libs and build the libs one by one following their README
+
+3. Build the software
+
+```
 yarn
 yarn dist
 ```

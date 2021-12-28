@@ -4,7 +4,7 @@ var angular = require("angular");
 require("angular-route");
 require("angular-material");
 const { ipcRenderer } = require("electron");
-const { BacklightMode } = require("../driver/options");
+const { BacklightMode, SegmentBrightness } = require("../lib/leds/options");
 
 const userProfilesStore = ipcRenderer.sendSync("getUserProfiles");
 
@@ -94,27 +94,27 @@ const Colors = [
 const Brightness = [
 	{
 		brightnessName: "OFF",
-		brightnessValue: 0,
+		brightnessValue: SegmentBrightness.OFF,
 	},
 	{
 		brightnessName: "LOW",
-		brightnessValue: 1,
+		brightnessValue: SegmentBrightness.LOW,
 	},
 	{
 		brightnessName: "MEDIUM",
-		brightnessValue: 2,
+		brightnessValue: SegmentBrightness.MEDIUM,
 	},
 	{
 		brightnessName: "HIGH",
-		brightnessValue: 3,
+		brightnessValue: SegmentBrightness.HIGH,
 	},
 	{
 		brightnessName: "ULTRA",
-		brightnessValue: 4,
+		brightnessValue: SegmentBrightness.ULTRA,
 	},
 	{
 		brightnessName: "ENOUGH",
-		brightnessValue: 5,
+		brightnessValue: SegmentBrightness.ENOUGH,
 	},
 ];
 

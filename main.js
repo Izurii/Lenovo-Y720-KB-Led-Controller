@@ -9,11 +9,6 @@ const {
 	clipboard,
 	nativeImage,
 } = require("electron");
-const {
-	getHidrawDevices,
-	findCorrectDevice,
-	setKeyboardOptions,
-} = require("./driver/index");
 const { exec, spawn } = require("child_process");
 
 const AutoLaunch = require("easy-auto-launch");
@@ -24,6 +19,10 @@ const fs = require("fs");
 const isFirstRun = firstRun();
 const constants = require("constants");
 const sudo = require("sudo-prompt");
+
+// LIBS
+const { setKeyboardOptions, getHidrawDevice } = require("./libs/leds");
+const { listenHotkey } = require("./libs/hotkey");
 
 const LedController = new AutoLaunch({
 	name: "y720-kb-led-controller",
@@ -192,14 +191,15 @@ if (!app.requestSingleInstanceLock()) {
 		app.allowRendererProcessReuse = false;
 		mainWindow.loadFile(path.join(__dirname, "/src/index.html"));
 
-		let res = await setKeyboardOptions(
+		let res = setKeyboardOptions(
 			selectedProfile.backlightMode,
-			selectedProfile.profileOptions,
-			app.getPath("userData")
+			selectedProfile.profileOptions
 		);
 		res !== true && genericError(res);
 
-		listenerForHotKey();
+		listenHotkey(() => {
+			mainWindow.webContents.send("changeProfileHotKey", null);
+		});
 
 		mainWindow.on("close", (event) => {
 			if (!usualQuit) {
@@ -224,11 +224,7 @@ app.on("activate", () => {
 });
 
 ipcMain.on("setKB", async (event, backlightMode, segmentOptions) => {
-	let res = await setKeyboardOptions(
-		backlightMode,
-		segmentOptions,
-		app.getPath("userData")
-	);
+	let res = await setKeyboardOptions(backlightMode, segmentOptions);
 	res !== true &&
 		dialog.showErrorBox(
 			"Error",
@@ -246,36 +242,6 @@ ipcMain.on("saveProfiles", (event, profiles) => {
 	setMenu();
 });
 
-const listenerForHotKey = async () => {
-	exec(
-		'xinput --list | tee | grep -v "Radio" | grep "ITE.*8910.*keyboard"',
-		(error, stdout, stderr) => {
-			if (stdout) {
-				let deviceIdString = stdout.match(/(id=\d*)/g)[0];
-				let deviceId = parseInt(deviceIdString.match(/(\d+)/g)[0]);
-
-				let stream = spawn("xinput", ["--test", String(deviceId)]);
-				stream.stdout.on("data", (data) => {
-					let keyPressed = String(data).match(
-						/(key\s*press\s*)(\d+)/g
-					);
-					if (!keyPressed) return;
-					let keyPressedCode = parseInt(
-						keyPressed[0].match(/(\d+)/g)[0]
-					);
-					if (keyPressedCode != 248) return;
-
-					mainWindow.webContents.send("changeProfileHotKey", null);
-				});
-			} else if (stderr) {
-				throw Error("Xinput didn't find the correct device.");
-			} else if (error) {
-				throw Error(error.message);
-			}
-		}
-	);
-};
-
 const testPermissionDeviceFile = async (deviceName) => {
 	return await new Promise((resolve, reject) => {
 		fs.access(`/dev/${deviceName}`, constants.W_OK, (err) => resolve(err));
@@ -283,7 +249,7 @@ const testPermissionDeviceFile = async (deviceName) => {
 };
 
 const checkPermission = async () => {
-	let correctDevice = await findCorrectDevice(await getHidrawDevices());
+	let correctDevice = await getHidrawDevice();
 	let permissionDevice = await testPermissionDeviceFile(correctDevice);
 	let shellCommand = `chown $USER:$USER /dev/${correctDevice}`;
 

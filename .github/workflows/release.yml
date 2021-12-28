@@ -6,19 +6,19 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-      steps:
-        - name: Check out Git repository
-          uses: actions/checkout@v1
-  
-        - name: Install Node.js, NPM and Yarn
-          uses: actions/setup-node@v1
-          with:
-            node-version: 14.16.0
-  
-        - name: Build and Release
-          run: |
-            npm install
-            npm run build-libs
-            npm run release
-          env:
-            GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.16.0
+
+      - name: Build and Release
+        run: |
+          npm install
+          npm run build-libs
+          npm run release
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}

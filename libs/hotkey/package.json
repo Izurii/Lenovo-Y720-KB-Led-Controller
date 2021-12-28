@@ -1,0 +1,18 @@
+{
+	"engines": {
+		"node": "=14.16.0"
+	},
+	"dependencies": {
+		"node-addon-api": "https://github.com/nodejs/node-addon-api/"
+	},
+	"scripts": {
+		"build": "node-gyp rebuild",
+		"clean": "node-gyp clean"
+	},
+	"gypfile": true,
+	"name": "hotkey-addon",
+	"version": "1.0.0",
+	"author": "",
+	"license": "ISC",
+	"description": ""
+}

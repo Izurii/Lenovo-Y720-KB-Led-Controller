@@ -4,7 +4,7 @@ var angular = require("angular");
 require("angular-route");
 require("angular-material");
 const { ipcRenderer } = require("electron");
-const { BacklightMode, SegmentBrightness } = require("../lib/leds/options");
+const { BacklightMode, SegmentBrightness } = require("../libs/leds/options");
 
 const userProfilesStore = ipcRenderer.sendSync("getUserProfiles");
 

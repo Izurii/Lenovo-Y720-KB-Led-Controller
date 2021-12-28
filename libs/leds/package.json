@@ -3,7 +3,8 @@
 		"node": "=14.16.0"
 	},
 	"dependencies": {
-		"node-addon-api": "https://github.com/nodejs/node-addon-api/"
+		"node-addon-api": "https://github.com/nodejs/node-addon-api/",
+		"node-gyp": "^8.4.1"
 	},
 	"scripts": {
 		"build": "node-gyp rebuild",

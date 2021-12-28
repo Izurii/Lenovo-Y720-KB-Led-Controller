@@ -5,11 +5,11 @@
 #include <string.h>
 #include <fcntl.h>
 #include <err.h>
-#include <libevdev-1.0/libevdev/libevdev.h>
 #include <dirent.h>
 #include <string>
 #include <thread>
 #include <chrono>
+#include "../libs/libevdev.h"
 
 using namespace Napi;
 using namespace std;

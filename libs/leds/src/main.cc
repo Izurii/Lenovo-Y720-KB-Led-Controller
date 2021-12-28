@@ -156,4 +156,4 @@ Object Init(Env env, Object exports)
 	return exports;
 }
 
-NODE_API_MODULE(ledDriver, Init)
+NODE_API_MODULE(ledAddon, Init)

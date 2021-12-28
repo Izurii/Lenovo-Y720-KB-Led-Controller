@@ -1,7 +1,7 @@
 {
     'targets': [
         {
-            'target_name': 'ledDriver',
+            'target_name': 'ledAddon',
             'sources': ['src/main.cc'],
             'include_dirs': ["<!@(node -p \"require('node-addon-api').include\")"],
             'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],

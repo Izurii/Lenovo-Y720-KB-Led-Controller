@@ -11,7 +11,7 @@
 		"clean": "node-gyp clean"
 	},
 	"gypfile": true,
-	"name": "led-driver",
+	"name": "led-addon",
 	"version": "1.0.0",
 	"author": "",
 	"license": "ISC",

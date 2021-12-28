@@ -39,7 +39,11 @@
 		},
 		"files": [
 			"resources/*",
-			"driver/*",
+			"libs/leds/index.js",
+			"libs/leds/options.js",
+			"libs/leds/build/Release/ledAddon.node",
+			"libs/hotkey/index.js",
+			"libs/hotkey/build/Release/hotkeyAddon.node",
 			"main.js",
 			"src/**/*"
 		]

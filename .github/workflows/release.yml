@@ -17,8 +17,8 @@ jobs:
 
       - name: Build and Release
         run: |
-          npm install
-          npm run build-libs
-          npm run release
+          yarn install
+          yarn run build-libs
+          yarn run release
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}

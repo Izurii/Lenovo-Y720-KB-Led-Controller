@@ -1,6 +1,6 @@
 # Lenovo-Y720-KB-Led-Controller
-[![Github releases (by asset)](https://img.shields.io/github/downloads/Izurii/Lenovo-Y720-KB-Led-Controller/total.svg)](https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller/releases/) [![Dependency Status][depstat-image]][depstat-url] [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=VCESYBAUCTF5S)
 
+[![Github releases (by asset)](https://img.shields.io/github/downloads/Izurii/Lenovo-Y720-KB-Led-Controller/total.svg)](https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller/releases/) [![Dependency Status][depstat-image]][depstat-url] [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=VCESYBAUCTF5S)
 
 This software controls the backlight of Lenovo Legion Y720 Keyboard on Linux, as the Lenovo didn't make the drivers/software for Linux.
 
@@ -26,11 +26,13 @@ Or you can install the deb packages using:
 sudo dpkg -i y720-kb-led-controller-x.deb
 ```
 
-# How to grant access to /dev/hidraw0 automatically
+# How to grant access to Hidraw and Input device automatically (hidraw device is used for controlling the leds and the input device is used to detect the hotkey Fn+Space)
 
-Create a file called `/etc/udev/rules.d/99-hidraw-permissions.rules`:
+Create a file called `/etc/udev/rules.d/99-any-name-you-want.rules`:
+
 ```
 SUBSYSTEM=="hidraw", ATTRS{name}=="ITE33D1:00", MODE="0666"
+SUBSYSTEM=="input", ATTRS{name}=="*Keyboard*", ATTRS{id/vendor}=="048d", ATTRS{id/product}=="c100", MODE="0666"
 ```
 
 Reboot.

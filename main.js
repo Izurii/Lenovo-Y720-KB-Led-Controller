@@ -9,6 +9,9 @@ const {
 	clipboard,
 	nativeImage,
 } = require("electron");
+
+app.disableHardwareAcceleration();
+
 const { exec, spawn } = require("child_process");
 
 const AutoLaunch = require("easy-auto-launch");

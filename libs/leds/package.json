@@ -1,6 +1,6 @@
 {
 	"engines": {
-		"node": "=14.16.0"
+		"node": "=16.9.1"
 	},
 	"dependencies": {
 		"node-addon-api": "https://github.com/nodejs/node-addon-api/",

@@ -24,8 +24,8 @@ const constants = require("constants");
 const sudo = require("sudo-prompt");
 
 // LIBS
-const { setKeyboardOptions, getHidrawDevice } = require("./libs/leds");
-const { listenHotkey, getInputDevice } = require("./libs/hotkey");
+const { setKeyboardOptions, getHidrawDevice } = require("../addons/led");
+const { listenHotkey, getInputDevice } = require("../addons/hotkey");
 
 const LedController = new AutoLaunch({
 	name: "y720-kb-led-controller",
@@ -40,7 +40,7 @@ let mainWindow;
 let tray = null;
 
 var frogIcon = nativeImage.createFromPath(
-	path.join(__dirname, "/resources/icon.png")
+	path.join(__dirname, "../resources/icon.png")
 );
 
 var usualQuit = false;
@@ -193,7 +193,7 @@ if (!app.requestSingleInstanceLock()) {
 		await checkInputPermission();
 
 		app.allowRendererProcessReuse = false;
-		mainWindow.loadFile(path.join(__dirname, "/src/index.html"));
+		mainWindow.loadFile(path.join(__dirname, "./index.html"));
 
 		let res = setKeyboardOptions(
 			selectedProfile.backlightMode,

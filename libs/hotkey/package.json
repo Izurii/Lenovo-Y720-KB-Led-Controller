@@ -8,7 +8,8 @@
 	},
 	"scripts": {
 		"build": "node-gyp rebuild",
-		"clean": "node-gyp clean"
+		"clean": "node-gyp clean",
+		"postbuild": "cp build/Release/hotkeyAddon.node ../../addons/hotkey"
 	},
 	"gypfile": true,
 	"name": "hotkey-addon",

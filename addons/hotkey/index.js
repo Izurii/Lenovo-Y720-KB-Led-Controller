@@ -1,4 +1,4 @@
-const { listenHotkey, getInputDevice } = require("./build/Release/hotkeyAddon");
+const { listenHotkey, getInputDevice } = require("./hotkeyAddon");
 
 module.exports.listenHotkey = (callbackFn) => {
 	listenHotkey(callbackFn);

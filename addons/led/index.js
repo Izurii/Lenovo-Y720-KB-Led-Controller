@@ -1,4 +1,4 @@
-const addon = require("./build/Release/ledAddon");
+const addon = require("./ledAddon");
 
 module.exports.setKeyboardOptions = (mode, segmentsOptions) => {
 	return addon.setKeyboardOptions(mode, segmentsOptions);

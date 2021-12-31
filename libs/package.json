@@ -1,0 +1,23 @@
+{
+	"engines": {
+		"node": "=16.9.1"
+	},
+	"dependencies": {
+		"node-addon-api": "https://github.com/nodejs/node-addon-api/",
+		"node-gyp": "^8.4.1"
+	},
+	"scripts": {
+		"build-hotkey-addon": "node-gyp rebuild -C ./hotkey",
+		"build-led-addon": "node-gyp rebuild -C ./led",
+		"postbuild-hotkey-addon": "cp ./hotkey/build/Release/hotkeyAddon.node ../addons/hotkey",
+		"postbuild-led-addon": "cp ./led/build/Release/ledAddon.node ../addons/led",
+		"build": "yarn run build-hotkey-addon && yarn run build-led-addon",
+		"clean": "cd ./led && node-gyp clean && cd ../ && cd ./hotkey && node-gyp clean"
+	},
+	"gypfile": true,
+	"name": "addons",
+	"version": "1.0.0",
+	"author": "",
+	"license": "ISC",
+	"description": ""
+}

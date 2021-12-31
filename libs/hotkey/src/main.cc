@@ -63,6 +63,7 @@ string _getInputDevice(const Env &env)
 						{
 							foundDevice = true;
 							inputDevice = entry->d_name;
+							break;
 						}
 					}
 					fclose(fp);

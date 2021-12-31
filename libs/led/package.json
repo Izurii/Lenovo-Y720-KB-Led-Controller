@@ -2,19 +2,8 @@
 	"engines": {
 		"node": "=16.9.1"
 	},
-	"dependencies": {
-		"node-addon-api": "https://github.com/nodejs/node-addon-api/",
-		"node-gyp": "^8.4.1"
-	},
 	"scripts": {
-		"build": "node-gyp rebuild",
-		"clean": "node-gyp clean",
-		"postbuild": "cp build/Release/ledAddon.node ../../addons/led"
-	},
-	"gypfile": true,
-	"name": "led-addon",
-	"version": "1.0.0",
-	"author": "",
-	"license": "ISC",
-	"description": ""
+		"build": "cd ../ && yarn run build-led-addon",
+		"clean": "node-gyp clean"
+	}
 }

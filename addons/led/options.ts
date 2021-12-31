@@ -1,4 +1,4 @@
-const SegmentColor = {
+export const SegmentColor = {
 	CRIMSON: 0,
 	TORCH_RED: 1,
 	HOLLYWOOD_CERISE: 2,
@@ -21,7 +21,7 @@ const SegmentColor = {
 	NO_COLOR: 19,
 };
 
-const SegmentBrightness = {
+export const SegmentBrightness = {
 	OFF: 0,
 	LOW: 1,
 	MEDIUM: 2,
@@ -30,14 +30,10 @@ const SegmentBrightness = {
 	ENOUGH: 5,
 };
 
-const BacklightMode = {
+export const BacklightMode = {
 	HEARTBEAT: 0,
 	BREATH: 1,
 	SMOOTH: 2,
 	ALWAYS_ON: 3,
 	WAVE: 4,
 };
-
-exports.BacklightMode = BacklightMode;
-exports.SegmentColor = SegmentColor;
-exports.SegmentBrightness = SegmentBrightness;

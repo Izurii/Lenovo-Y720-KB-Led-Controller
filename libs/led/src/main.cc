@@ -135,10 +135,10 @@ Boolean setKeyboardOptions(const CallbackInfo &info)
 		unsigned char buffer[6] = {
 			204,
 			0,
-			static_cast<unsigned char>(backlightMode),
-			static_cast<unsigned char>(options[i][0]),
-			static_cast<unsigned char>(options[i][1]),
-			static_cast<unsigned char>(i)};
+			static_cast<unsigned char>(backlightMode), // style
+			static_cast<unsigned char>(options[i][0]), //color
+			static_cast<unsigned char>(options[i][1]), //brightness
+			static_cast<unsigned char>(i)};			   // block
 
 		ioctl(fd, HIDIOCSFEATURE(6), buffer);
 	}

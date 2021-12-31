@@ -7,7 +7,7 @@
 	"engineStrict": true,
 	"version": "v1.9.11-corinthians",
 	"description": "Software to control the keyboard backlight rgb leds of Lenovo Legion Y720 notebook.",
-	"main": "src/main.js",
+	"main": "distJs/src/main.js",
 	"author": "Izurii Hootoh <izuriihootoh@gmail.com> (https://github.com/Izurii)",
 	"scripts": {
 		"build": "electron-builder",
@@ -59,10 +59,14 @@
 	"homepage": "https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller#readme",
 	"devDependencies": {
 		"@types/angular": "^1.8.4",
+		"@types/angular-animate": "^1.5.11",
+		"@types/angular-aria": "^1.7.1",
 		"@types/angular-material": "^1.1.73",
 		"@types/angular-route": "^1.7.2",
+		"@types/electron": "^1.6.10",
 		"electron": "^16.0.5",
 		"electron-builder": "^22.14.5",
+		"electron-rebuild": "^3.2.5",
 		"electron-reloader": "^1.2.1",
 		"tsc": "^2.0.3",
 		"typescript": "^4.5.4"

@@ -1,58 +1,42 @@
-const {
-	app,
-	ipcMain,
-	BrowserWindow,
-	Tray,
-	Menu,
-	Notification,
-	dialog,
-	clipboard,
-	nativeImage,
-} = require("electron");
+import { app, ipcMain, BrowserWindow, Tray, Menu, Notification, dialog, clipboard, nativeImage, MenuItemConstructorOptions } from "electron";
 
 app.disableHardwareAcceleration();
 
-const { exec, spawn } = require("child_process");
-
-const AutoLaunch = require("easy-auto-launch");
-const Store = require("electron-store");
-const path = require("path");
-const firstRun = require("electron-first-run");
-const fs = require("fs");
-const isFirstRun = firstRun();
-const constants = require("constants");
-const sudo = require("sudo-prompt");
+import AutoLaunch = require("easy-auto-launch");
+import Store = require("electron-store");
+import path = require("path");
+import firstRun = require("electron-first-run");
+import fs = require("fs");
+import constants = require("constants");
+import sudo = require("sudo-prompt");
 
 // LIBS
-const { setKeyboardOptions, getHidrawDevice } = require("../addons/led");
-const { listenHotkey, getInputDevice } = require("../addons/hotkey");
-
+import { setKeyboardOptions, getHidrawDevice } from "../addons/led";
+import { listenHotkey, getInputDevice } from "../addons/hotkey";
+import { SegmentBrightness, SegmentColor } from "../addons/led/options";
+const isFirstRun = firstRun();
 const LedController = new AutoLaunch({
 	name: "y720-kb-led-controller",
 	isHidden: true,
 });
 
-try {
-	require("electron-reloader")(module);
-} catch (_) {}
-
-let mainWindow;
-let tray = null;
+let mainWindow: null | BrowserWindow = null;
+let tray: null | any = null;
 
 var frogIcon = nativeImage.createFromPath(
 	path.join(__dirname, "../resources/icon.png")
 );
 
 var usualQuit = false;
-var menu = [
+var menu: MenuItemConstructorOptions[] = [
 	{
 		label: "Open/Show",
 		type: "normal",
 		click: () => {
-			mainWindow.show();
+			mainWindow!.show();
 		},
 	},
-	null,
+	{},
 	{
 		label: "Start at login",
 		type: "checkbox",
@@ -79,10 +63,21 @@ var menu = [
 
 const store = new Store();
 
+export type UserProfile = {
+	profileName: string;
+	backlightMode: number;
+	profileOptions: { segmentColor: any, segmentBrightness: any, '$$hashKey'?: string }[];
+	'$$hashKey'?: string;
+};
+
 const getProfilesFunc = () => {
-	let userProfiles = {
-		selectedProfile: store.get("selectedProfile"),
-		profiles: store.get("profiles"),
+	let userProfiles: {
+		selectedProfile: number;
+		profiles: UserProfile[];
+		runAtLogin?: boolean;
+	} = {
+		selectedProfile: store.get("selectedProfile") as number,
+		profiles: store.get("profiles") as UserProfile[],
 	};
 
 	if (!userProfiles.profiles) {
@@ -92,10 +87,10 @@ const getProfilesFunc = () => {
 				profileName: "Profile 1",
 				backlightMode: 3,
 				profileOptions: [
-					{ segmentColor: 0, segmentBrightness: 4 },
-					{ segmentColor: 0, segmentBrightness: 4 },
-					{ segmentColor: 0, segmentBrightness: 4 },
-					{ segmentColor: 0, segmentBrightness: 4 },
+					{ segmentColor: SegmentColor.CRIMSON, segmentBrightness: SegmentBrightness.HIGH },
+					{ segmentColor: SegmentColor.CRIMSON, segmentBrightness: SegmentBrightness.HIGH },
+					{ segmentColor: SegmentColor.CRIMSON, segmentBrightness: SegmentBrightness.HIGH },
+					{ segmentColor: SegmentColor.CRIMSON, segmentBrightness: SegmentBrightness.HIGH },
 				],
 			},
 		];
@@ -115,8 +110,10 @@ const getProfilesFunc = () => {
 };
 
 const setMenu = () => {
-	let profiles = [];
-	let profilesSubmenu = {
+	let profiles: MenuItemConstructorOptions[] = [];
+	let profilesSubmenu: MenuItemConstructorOptions & {
+		submenu?: MenuItemConstructorOptions[];
+	} = {
 		label: "Profiles",
 		type: "submenu",
 	};
@@ -127,7 +124,7 @@ const setMenu = () => {
 			label: item.profileName,
 			type: "radio",
 			click: () => {
-				mainWindow.webContents.send("selectProfileTray", index);
+				mainWindow!.webContents.send("selectProfileTray", index);
 			},
 		});
 		if (userProfiles.selectedProfile == index)
@@ -143,7 +140,7 @@ const setMenu = () => {
 	MenuArray[1] = profilesSubmenu;
 
 	let contextMenu = Menu.buildFromTemplate(MenuArray);
-	contextMenu.items[2].checked = userProfiles.runAtLogin;
+	contextMenu.items[2].checked = !!userProfiles.runAtLogin;
 
 	tray.setContextMenu(contextMenu);
 };
@@ -175,7 +172,6 @@ if (!app.requestSingleInstanceLock()) {
 		setMenu();
 
 		mainWindow = new BrowserWindow({
-			configName: "user-settings",
 			webPreferences: {
 				nodeIntegration: true,
 				contextIsolation: false,
@@ -192,7 +188,6 @@ if (!app.requestSingleInstanceLock()) {
 		await checkHidrawPermission();
 		await checkInputPermission();
 
-		app.allowRendererProcessReuse = false;
 		mainWindow.loadFile(path.join(__dirname, "./index.html"));
 
 		let res = setKeyboardOptions(
@@ -202,28 +197,22 @@ if (!app.requestSingleInstanceLock()) {
 		res !== true && genericError(res);
 
 		listenHotkey(() => {
-			mainWindow.webContents.send("changeProfileHotKey", null);
+			mainWindow!.webContents.send("changeProfileHotKey", null);
 		});
 
 		mainWindow.on("close", (event) => {
 			if (!usualQuit) {
 				event.preventDefault();
-				mainWindow.hide();
+				mainWindow!.hide();
 				if (isFirstRun) backgroundNotification.show();
 			}
 		});
 	});
 }
 
-app.on("window-all-closed", (event) => {
+app.on("window-all-closed", () => {
 	if (process.platform !== "darwin") {
 		app.quit();
-	}
-});
-
-app.on("activate", () => {
-	if (BrowserWindow.getAllWindows().length === 0) {
-		createWindow();
 	}
 });
 
@@ -233,7 +222,7 @@ ipcMain.on("setKB", async (event, backlightMode, segmentOptions) => {
 		dialog.showErrorBox(
 			"Error",
 			res +
-				"\n\nContact the dev for more information izuriihootoh@gmail.com"
+			"\n\nContact the dev for more information izuriihootoh@gmail.com"
 		);
 });
 
@@ -246,8 +235,8 @@ ipcMain.on("saveProfiles", (event, profiles) => {
 	setMenu();
 });
 
-const can = async (path, permission) => {
-	return await new Promise((resolve, reject) => {
+const can = async (path: string, permission: number) => {
+	return await new Promise<NodeJS.ErrnoException | null>((resolve) => {
 		fs.access(`${path}`, permission, (err) => resolve(err));
 	});
 };
@@ -262,14 +251,14 @@ const checkInputPermission = async () => {
 	await checkPermission(`/dev/input/${inputDevice}`, constants.R_OK);
 };
 
-const checkPermission = async (path, permission) => {
+const checkPermission = async (path: string, permission: number) => {
 	let permissionDevice = await can(path, permission);
 	let shellCommand = `sudo chmod 666 ${path}`;
 
 	if (permissionDevice && permissionDevice.code == "EACCES") {
-		await new Promise((resolve, reject) => {
+		await new Promise((resolve) => {
 			dialog
-				.showMessageBox(mainWindow, {
+				.showMessageBox(mainWindow!, {
 					type: "info",
 					title: "Permissions to write/read needed",
 					message:
@@ -312,9 +301,9 @@ const checkPermission = async (path, permission) => {
 	}
 };
 
-const checkPermissionDialog = async (path, permission, resolve) => {
+const checkPermissionDialog = async (path: string, permission: number, resolve: (value?: unknown) => void) => {
 	dialog
-		.showMessageBox(mainWindow, {
+		.showMessageBox(mainWindow!, {
 			type: "info",
 			title: "Checking permission to write/read file",
 			message:
@@ -326,9 +315,9 @@ const checkPermissionDialog = async (path, permission, resolve) => {
 				let permissionDevice = await can(path, permission);
 				if (permissionDevice && permissionDevice.code == "EACCES") {
 					dialog.showErrorBox("Error", "Permission not detected!");
-					await checkPermissionDialog(path, resolve);
+					await checkPermissionDialog(path, permission, resolve);
 				} else {
-					dialog.showMessageBox(mainWindow, {
+					dialog.showMessageBox(mainWindow!, {
 						type: "info",
 						title: "Success!",
 						message:
@@ -343,11 +332,11 @@ const checkPermissionDialog = async (path, permission, resolve) => {
 		});
 };
 
-const genericError = (error) => {
+const genericError = (error: string) => {
 	dialog.showErrorBox(
 		"Error",
 		error +
-			"\n\nContact the dev for more information izuriihootoh@gmail.com"
+		"\n\nContact the dev for more information izuriihootoh@gmail.com"
 	);
 	usualQuit = true;
 	app.quit();

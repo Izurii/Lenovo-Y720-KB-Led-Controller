@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./",
+		"target": "ESNext",
+		"strict": true,
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"outDir": "./distJs/",
+	},
+	"include": [
+		"src/**/*",
+		"addons/**/*"
+	],
+	"exclude": [
+		"node_modules"
+	]
+}

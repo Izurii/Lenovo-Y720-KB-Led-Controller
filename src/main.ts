@@ -1,6 +1,6 @@
 import { app, ipcMain, BrowserWindow, Tray, Menu, Notification, dialog, clipboard, nativeImage, MenuItemConstructorOptions } from "electron";
 
-app.disableHardwareAcceleration();
+app.commandLine.appendSwitch("in-process-gpu");
 
 import AutoLaunch = require("easy-auto-launch");
 import Store = require("electron-store");
@@ -14,6 +14,7 @@ import sudo = require("sudo-prompt");
 import { setKeyboardOptions, getHidrawDevice } from "../addons/led";
 import { listenHotkey, getInputDevice } from "../addons/hotkey";
 import { SegmentBrightness, SegmentColor } from "../addons/led/options";
+
 const isFirstRun = firstRun();
 const LedController = new AutoLaunch({
 	name: "y720-kb-led-controller",

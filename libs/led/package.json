@@ -4,6 +4,7 @@
 	},
 	"scripts": {
 		"build": "cd ../ && yarn run build-led-addon",
+		"build:dev": "node-gyp rebuild --debug",
 		"clean": "node-gyp clean"
 	}
 }

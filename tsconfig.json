@@ -5,11 +5,10 @@
 		"strict": true,
 		"module": "commonjs",
 		"esModuleInterop": true,
-		"outDir": "./distJs/",
+		"outDir": "./dist/js",
 	},
 	"include": [
 		"src/**/*",
-		"addons/**/*"
 	],
 	"exclude": [
 		"node_modules"

@@ -9,8 +9,6 @@
 	"scripts": {
 		"build-hotkey-addon": "node-gyp rebuild -C ./hotkey --target=1.2.3 --arch=x64 --dist-url=https://electronjs.org/headers",
 		"build-led-addon": "node-gyp rebuild -C ./led --target=1.2.3 --arch=x64 --dist-url=https://electronjs.org/headers",
-		"postbuild-hotkey-addon": "cp ./hotkey/build/Release/hotkeyAddon.node ../addons/hotkey",
-		"postbuild-led-addon": "cp ./led/build/Release/ledAddon.node ../addons/led",
 		"build": "yarn run build-hotkey-addon && yarn run build-led-addon",
 		"clean": "cd ./led && node-gyp clean && cd ../ && cd ./hotkey && node-gyp clean"
 	},

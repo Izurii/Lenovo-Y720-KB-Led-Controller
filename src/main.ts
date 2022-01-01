@@ -11,9 +11,9 @@ import constants = require("constants");
 import sudo = require("sudo-prompt");
 
 // LIBS
-import { setKeyboardOptions, getHidrawDevice } from "../addons/led";
-import { listenHotkey, getInputDevice } from "../addons/hotkey";
-import { SegmentBrightness, SegmentColor } from "../addons/led/options";
+import { setKeyboardOptions, getHidrawDevice } from "./addons/led";
+import { listenHotkey, getInputDevice } from "./addons/hotkey";
+import { SegmentBrightness, SegmentColor } from "./addons/led/options";
 
 const isFirstRun = firstRun();
 const LedController = new AutoLaunch({
@@ -25,7 +25,7 @@ let mainWindow: null | BrowserWindow = null;
 let tray: null | any = null;
 
 var frogIcon = nativeImage.createFromPath(
-	path.join(__dirname, "../resources/icon.png")
+	path.join(__dirname, "./resources/icon.png")
 );
 
 var usualQuit = false;

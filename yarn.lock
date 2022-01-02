@@ -1099,10 +1099,10 @@ duplexer3@^0.1.4:
   resolved "https://registry.yarnpkg.com/duplexer3/-/duplexer3-0.1.4.tgz#ee01dd1cac0ed3cbc7fdbea37dc0a8f1ce002ce2"
   integrity sha1-7gHdHKwO08vH/b6jfcCo8c4ALOI=
 
-easy-auto-launch@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/easy-auto-launch/-/easy-auto-launch-6.0.0.tgz#c7ae919b3e7783ec5f12f17a81f17460faf1fcbd"
-  integrity sha512-op0uQQ/+qpfgNgjcVzP+ExYReswREPBTYA2f1Yha7go8H/TANq52HqKeowvWacONy8/sYLJO2AlU5uqtiW/VEg==
+easy-auto-launch@^6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/easy-auto-launch/-/easy-auto-launch-6.0.2.tgz#05c1733903665c045a15652d71b96f4d74a3af5f"
+  integrity sha512-UhrWpPlPB2YKQXU+hw2kIfQzVecDnYsLUiFdLkKv3eCUtxmCcfEcAjxk8P6RMc8IjCoW8N9ALpJh5n0R1h/z1A==
   dependencies:
     applescript "^1.0.0"
     mkdirp "^1.0.4"

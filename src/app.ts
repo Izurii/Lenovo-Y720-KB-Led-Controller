@@ -6,7 +6,7 @@ require("angular-material");
 
 import { UserProfile } from "./main";
 import { ipcRenderer } from "electron";
-import { BacklightMode, SegmentBrightness } from "./addons/led/options";
+import { BacklightMode, SegmentBrightness } from "./addons/led";
 import { ISCEService, IScope } from "angular";
 
 const userProfilesStore = ipcRenderer.sendSync("getUserProfiles");

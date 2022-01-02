@@ -70,7 +70,7 @@
 		"angular-material": "^1.2.4",
 		"angular-messages": "^1.8.2",
 		"angular-route": "^1.8.2",
-		"easy-auto-launch": "^6.0.0",
+		"easy-auto-launch": "^6.0.2",
 		"electron-first-run": "^3.0.0",
 		"electron-store": "^8.0.1",
 		"sudo-prompt": "^9.2.1"

@@ -4,6 +4,6 @@ export function listenHotkey(callbackFn: () => any) {
 	addon.listenHotkey(callbackFn);
 };
 
-export function getInputDevice() {
+export function getInputDevice(): Error | string {
 	return addon.getInputDevice();
 };

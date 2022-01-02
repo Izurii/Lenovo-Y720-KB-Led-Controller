@@ -5,15 +5,15 @@ app.commandLine.appendSwitch("in-process-gpu");
 import AutoLaunch = require("easy-auto-launch");
 import Store = require("electron-store");
 import path = require("path");
+// @ts-ignore
 import firstRun = require("electron-first-run");
 import fs = require("fs");
 import constants = require("constants");
 import sudo = require("sudo-prompt");
 
 // LIBS
-import { setKeyboardOptions, getHidrawDevice } from "./addons/led";
+import { SegmentBrightness, SegmentColor, setKeyboardOptions, getHidrawDevice, BacklightMode } from "./addons/led";
 import { listenHotkey, getInputDevice } from "./addons/hotkey";
-import { SegmentBrightness, SegmentColor } from "./addons/led/options";
 
 const isFirstRun = firstRun();
 const LedController = new AutoLaunch({
@@ -67,7 +67,11 @@ const store = new Store();
 export type UserProfile = {
 	profileName: string;
 	backlightMode: number;
-	profileOptions: { segmentColor: any, segmentBrightness: any, '$$hashKey'?: string }[];
+	profileOptions: {
+		segmentColor: number,
+		segmentBrightness: number,
+		'$$hashKey'?: string
+	}[];
 	'$$hashKey'?: string;
 };
 
@@ -86,7 +90,7 @@ const getProfilesFunc = () => {
 		userProfiles.profiles = [
 			{
 				profileName: "Profile 1",
-				backlightMode: 3,
+				backlightMode: BacklightMode.ALWAYS_ON,
 				profileOptions: [
 					{ segmentColor: SegmentColor.CRIMSON, segmentBrightness: SegmentBrightness.HIGH },
 					{ segmentColor: SegmentColor.CRIMSON, segmentBrightness: SegmentBrightness.HIGH },
@@ -191,15 +195,18 @@ if (!app.requestSingleInstanceLock()) {
 
 		mainWindow.loadFile(path.join(__dirname, "./index.html"));
 
-		let res = setKeyboardOptions(
-			selectedProfile.backlightMode,
-			selectedProfile.profileOptions
-		);
-		res !== true && genericError(res);
+		try {
+			setKeyboardOptions(
+				selectedProfile.backlightMode,
+				selectedProfile.profileOptions
+			);
 
-		listenHotkey(() => {
-			mainWindow!.webContents.send("changeProfileHotKey", null);
-		});
+			listenHotkey(() => {
+				mainWindow!.webContents.send("changeProfileHotKey", null);
+			});
+		} catch (e) {
+			genericError((e as Error).message);
+		}
 
 		mainWindow.on("close", (event) => {
 			if (!usualQuit) {
@@ -218,13 +225,11 @@ app.on("window-all-closed", () => {
 });
 
 ipcMain.on("setKB", async (event, backlightMode, segmentOptions) => {
-	let res = await setKeyboardOptions(backlightMode, segmentOptions);
-	res !== true &&
-		dialog.showErrorBox(
-			"Error",
-			res +
-			"\n\nContact the dev for more information izuriihootoh@gmail.com"
-		);
+	try {
+		setKeyboardOptions(backlightMode, segmentOptions);
+	} catch (e) {
+		genericError((e as Error).message);
+	}
 });
 
 ipcMain.on("getUserProfiles", (event) => {
@@ -243,13 +248,21 @@ const can = async (path: string, permission: number) => {
 };
 
 const checkHidrawPermission = async () => {
-	const hidrawDevice = await getHidrawDevice();
-	await checkPermission(`/dev/${hidrawDevice}`, constants.W_OK);
+	try {
+		const hidrawDevice = getHidrawDevice();
+		await checkPermission(`/dev/${hidrawDevice}`, constants.W_OK);
+	} catch (e) {
+		genericError((e as Error).message);
+	}
 };
 
 const checkInputPermission = async () => {
-	const inputDevice = await getInputDevice();
-	await checkPermission(`/dev/input/${inputDevice}`, constants.R_OK);
+	try {
+		const inputDevice = await getInputDevice();
+		await checkPermission(`/dev/input/${inputDevice}`, constants.R_OK);
+	} catch (e) {
+		genericError((e as Error).message);
+	}
 };
 
 const checkPermission = async (path: string, permission: number) => {

@@ -73,7 +73,7 @@ if test -f "$HOTKEY_ADDON_MD5" && test -f "$LED_ADDON_MD5"; then
 	esac
 
 	case "$CHECK_MD5_LED" in
-		*"WARNING"*)
+		*"WARNING"*|*"FAILED"*)
 			echo "LED addon is not up to date"
 			buildLedAddon
 			;;

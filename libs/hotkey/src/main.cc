@@ -80,7 +80,7 @@ String getInputDevice(const CallbackInfo &info)
 	return Napi::String::From(env, inputDevice);
 }
 
-void threadCallback(int err, libevdev *dev, input_event ev)
+void _threadCallback(int err, libevdev *dev, input_event ev)
 {
 	auto callback = [](Napi::Env env, Function jsCallback)
 	{
@@ -149,7 +149,7 @@ void _listenHotkey(const CallbackInfo &info)
 			nativeThread.join();
 		});
 
-	nativeThread = thread(threadCallback, err, dev, ev);
+	nativeThread = thread(_threadCallback, err, dev, ev);
 }
 
 void listenHotkey(const CallbackInfo &info)

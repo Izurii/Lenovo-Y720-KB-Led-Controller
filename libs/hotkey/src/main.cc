@@ -37,32 +37,29 @@ string _getInputDevice(const Env &env)
 			break;
 		}
 
-		if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
+		if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 && strstr(entry->d_name, "event"))
 		{
-			if (strstr(entry->d_name, "event"))
+			string filePath = string(SYS_CLASS_INPUT_PATH) + "/" + entry->d_name + "/device/uevent";
+			FILE *fp = fopen(filePath.c_str(), "r");
+
+			if (!fp)
 			{
-				string filePath = string(SYS_CLASS_INPUT_PATH) + "/" + entry->d_name + "/device/uevent";
-				FILE *fp = fopen(filePath.c_str(), "r");
+				throw Error::New(env, "Error opening input file");
+			}
 
-				if (!fp)
+			if (fp)
+			{
+				char line[256] = {0};
+				while (fgets(line, sizeof(line), fp))
 				{
-					throw Error::New(env, "Error opening input file");
-				}
-
-				if (fp)
-				{
-					char line[256] = {0};
-					while (fgets(line, sizeof(line), fp))
+					if (strstr(line, "Keyboard") && strstr(line, "8910"))
 					{
-						if (strstr(line, "Keyboard") && strstr(line, "8910"))
-						{
-							foundDevice = true;
-							inputDevice = entry->d_name;
-							break;
-						}
+						foundDevice = true;
+						inputDevice = entry->d_name;
+						break;
 					}
-					fclose(fp);
 				}
+				fclose(fp);
 			}
 		}
 	}

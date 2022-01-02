@@ -13,7 +13,7 @@
 		"prebuild": "./scripts/prebuild.sh",
 		"build": "electron-builder",
 		"prestart": "./scripts/prestart.sh",
-		"start": "yarn run tsc && electron .",
+		"start": "electron .",
 		"build-libs": "yarn --cwd ./libs && yarn --cwd ./libs build"
 	},
 	"build": {

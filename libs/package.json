@@ -7,7 +7,7 @@
 		"node-gyp": "^8.4.1"
 	},
 	"scripts": {
-		"build": "./build.sh",
+		"build": "cd ./../ && ./scripts/libs/build.sh",
 		"build-hotkey-addon": "node-gyp rebuild -C ./hotkey --target=1.2.3 --arch=x64 --dist-url=https://electronjs.org/headers",
 		"build-led-addon": "node-gyp rebuild -C ./led --target=1.2.3 --arch=x64 --dist-url=https://electronjs.org/headers",
 		"build-all": "yarn run build-hotkey-addon && yarn run build-led-addon",

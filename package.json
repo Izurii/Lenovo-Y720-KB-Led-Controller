@@ -10,10 +10,11 @@
 	"main": "./dist/js/main.js",
 	"author": "Izurii Hootoh <izuriihootoh@gmail.com> (https://github.com/Izurii)",
 	"scripts": {
-		"prebuild": "./prebuild.sh",
+		"prebuild": "./scripts/prebuild.sh",
 		"build": "electron-builder",
+		"prestart": "./scripts/prestart.sh",
 		"start": "yarn run tsc && electron .",
-		"build-libs": "cd ./libs && yarn && yarn run build"
+		"build-libs": "yarn --cwd ./libs && yarn --cwd ./libs build"
 	},
 	"build": {
 		"appId": "y720-kb-led-controller",

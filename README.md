@@ -26,7 +26,7 @@ Or you can install the deb packages using:
 sudo dpkg -i y720-kb-led-controller-x.deb
 ```
 
-# How to grant access to Hidraw and Input device automatically
+# How to grant access to Hidraw and Input device
 
 Hidraw device is used for controlling the leds and the input device is used to detect the hotkey Fn+Space.
 
@@ -39,6 +39,27 @@ SUBSYSTEM=="input", ATTRS{name}=="*Keyboard*", ATTRS{id/vendor}=="048d", ATTRS{i
 
 Reboot your PC or use this command to reload and trigger the new udev rules `sudo udevadm control --reload-rules && sudo udevadm trigger`
 
+# DEV
+
+# Recommendations
+
+-   VSCode with the extensions listed below
+    -   Better C++ Syntax
+    -   Better Shell Syntax
+    -   C/C++ Extension Pack by Microsoft
+    -   CodeLLDB (to debug things if you know what you're doing)
+    -   EditorConfig for VS Code
+    -   Shell Script Command Completion
+    -   ShellCheck (if you want to use this extension follow their guide on how to install it)
+-   Patience
+
+# Requirements to build/start
+
+-   GCC
+-   yarn
+-   libevdev (the needed files are already in the ./libs/hotkey/libs folder, but you never know ¯\_(ツ)\_/¯ )
+-   node-gyp (I do recommend to globally install it using either `npm install -g node-gyp` or `yarn global add node-gyp`)
+
 # How to build it yourself
 
 1. First clone the repo
@@ -47,19 +68,10 @@ Reboot your PC or use this command to reload and trigger the new udev rules `sud
 git clone https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller
 ```
 
-2. Build the libs
+2. Build
 
 ```
-yarn build-libs
-```
-
-Or you can enter the folder libs and build the libs one by one following their README
-
-3. Build the software
-
-```
-yarn
-yarn dist
+yarn build
 ```
 
 # How to start the software using yarn
@@ -67,6 +79,14 @@ yarn dist
 ```
 yarn start
 ```
+
+# Good to know
+
+-   Both scripts (build and start) has a lot of things behind doing all the dirty work.
+    -   `yarn run build` or `yarn build` do these actions:
+        -   As soon as you run the command, yarn will trigger the "prebuild" script, the prebuild script is going to run the sh file `./scripts/prebuild.sh`. This shell script is going to run all the things needed to build the application, take a look at the script and see what it does.
+        -   The same logic applies to `yarn run start` but it runs the file `./scripts/prestart.sh`
+-   You can take a look at the README inside the folder `./scripts` if you want more details in what those scripts is doing.
 
 [depstat-url]: https://david-dm.org/Izurii/Lenovo-Y720-KB-Led-Controller
 [depstat-image]: https://david-dm.org/Izurii/Lenovo-Y720-KB-Led-Controller.svg?style=flat

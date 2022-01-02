@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # shellcheck disable=SC1091
 . ./scripts/.env
@@ -28,22 +28,17 @@ buildAll() {
 	buildHotkeyAddon
 }
 
-createMD5Files() {
-	echo "Creating MD5 files..."
-	createHotkeyAddonMD5
-	createLedAddonMD5
-	echo "MD5 files created"
-}
-
 createLedAddonMD5() {
 	echo "Creating LED addon MD5 file..."
-	md5sum ./led/binding.gyp ./led/package.json ./led/src/main.cc > "$LED_ADDON_MD5"
+	md5sum "$LED_LIB_DIR"/binding.gyp "$LED_LIB_DIR"/package.json "$LED_LIB_DIR"/src/main.cc > "$LED_ADDON_MD5"
 	echo "LED addon MD5 file created"
 }
 
 createHotkeyAddonMD5() {
 	echo "Creating Hotkey addon MD5 file..."
-	md5sum ./hotkey/binding.gyp ./hotkey/package.json ./hotkey/src/main.cc > "$HOTKEY_ADDON_MD5"
+	md5sum "$HOTKEY_LIB_DIR"/binding.gyp "$HOTKEY_LIB_DIR"/package.json \
+	"$HOTKEY_LIB_DIR"/src/main.cc  "$HOTKEY_LIB_DIR"/libs/libevdev-uinput.h \
+	"$HOTKEY_LIB_DIR"/libs/libevdev.h "$HOTKEY_LIB_DIR"/libs/libevdev.so > "$HOTKEY_ADDON_MD5"
 	echo "Hotkey addon MD5 file created"
 }
 
@@ -56,19 +51,19 @@ elif test -f "$LED_ADDON_FILE" && ! test -f "$HOTKEY_ADDON_FILE"; then
 elif ! test -f "$HOTKEY_ADDON_FILE" && ! test -f "$LED_ADDON_FILE"; then
 	echo "Both addon files do not exist. Building both"
 	buildAll
-	exit 1
+	exit 0
 else
 	echo "Both addon files exist. Checking MD5 sums"
 fi
 
-if test -f "$HOTKEY_ADDON_MD5" && test -f "$LED_ADDON_MD5"
-then
+if test -f "$HOTKEY_ADDON_MD5" && test -f "$LED_ADDON_MD5"; then
 	echo "MD5 files exist. Checking MD5sums..."
-	CHECK_MD5_HOTKEY=$(md5sum -c "$HOTKEY_ADDON_MD5") > /dev/null 2>&1
-	CHECK_MD5_LED=$(md5sum -c "$LED_ADDON_MD5") > /dev/null 2>&1
+
+	CHECK_MD5_HOTKEY=$(md5sum -c "$HOTKEY_ADDON_MD5")
+	CHECK_MD5_LED=$(md5sum -c "$LED_ADDON_MD5")
 
 	case "$CHECK_MD5_HOTKEY" in
-		*"WARNING"*)
+		*"WARNING"*|*"FAILED"*)
 			echo "Hotkey addon is not up to date"
 			buildHotkeyAddon
 			;;
@@ -91,6 +86,6 @@ then
 
 else
 	echo "MD5 files do not exist."
-	createMD5Files
+	buildAll
 	exit 0
 fi

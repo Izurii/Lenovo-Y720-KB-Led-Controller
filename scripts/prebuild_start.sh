@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 # shellcheck disable=SC1091
-. ./scripts/env
+. ./scripts/.env
 
 rm -rf "$DIST_JS_DIR"
 
+yarn
 yarn run build-libs
 yarn run tsc
 
@@ -14,5 +15,5 @@ cp -r "$SRC_DIR"/resources "$DIST_JS_DIR"/
 cp "$SRC_DIR"/index.html "$DIST_JS_DIR"/
 
 # Copying compiled libs
-cp "$HOTKEY_LIB_RELEASE_DIR"/hotkeyAddon.node "$DIST_JS_DIR"/addons/hotkey/hotkeyAddon.node
-cp "$LED_LIB_RELEASE_DIR"/ledAddon.node "$DIST_JS_DIR"/addons/led/ledAddon.node
+cp "$HOTKEY_LIB_RELEASE_DIR"/hotkeyAddon.node "$DIST_JS_DIR"/addons/hotkey
+cp "$LED_LIB_RELEASE_DIR"/ledAddon.node "$DIST_JS_DIR"/addons/led

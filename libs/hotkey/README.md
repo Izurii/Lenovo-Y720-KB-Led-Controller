@@ -1,17 +1,9 @@
 # Requirements
 
--   libevdev (files included in ./libs folder)
+-   Described in the main README
 
 # How to build
 
-Inside the folder run
+Inside the same folder that this README is run: `yarn run build` or go back one folder and run `yarn run build-hotkey-addon`.
 
-```
-yarn
-```
-
-Or
-
-```
-yarn build
-```
+The compiled file is located inside the `./build/Release/hotkeyAddon.node`

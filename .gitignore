@@ -4,3 +4,4 @@ package-lock.json
 dist/
 build/
 *.node
+*.md5

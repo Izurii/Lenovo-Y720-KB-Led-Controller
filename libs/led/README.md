@@ -223,8 +223,8 @@ Looking back at the function `HidSetFeature_thing`, the thing we want to know is
 So let's make a brief pause and collect what we got:
 
 	1. We know that to control the backlight we need to send something to a Hid device.
-	2. We already know that the payload we need to send is 6 bytes in size and it's first byte is the value **204**.
-	3. Following from the function `HidSetFeature_thing` we know that the value of the other 5 bytes of the payload comes from the register `r12` and the value of `r12` comes from the register `rsp`.
+	2. We already know that the payload we need to send is 6 bytes in size and it's first byte is the value 204.
+	3. Following from the function "HidSetFeature_thing" we know that the value of the other 5 bytes of the payload comes from the register "r12" and the value of "r12" comes from the register "rsp".
 	4. The fourth arg is our payload.
 
 
@@ -235,6 +235,7 @@ The range `rsp+96~rsp+92` is already discarted because we don't see anything tha
 ![image](https://user-images.githubusercontent.com/46232520/147924418-863cf72a-8125-4c2d-9df5-b80b21ca31e7.png)
 
 From this picture we already got two bytes, the values of `rsp+96` and `rsp+100` so write that down:
+
 	- `rsp+96` = 0
 	- `rsp+100`
 		- The value comes from the `bl` register.

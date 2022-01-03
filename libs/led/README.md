@@ -141,10 +141,6 @@ Looking at the debug thing we can see that the second, third and fourth argument
 
 So now we know that `edx` holds the value of the "block", `r8d` holds the value of the color and `r9d` the style.
 
-After some renaming we get to this:
-
-![image](https://user-images.githubusercontent.com/46232520/147892617-6aad9008-802f-4dc1-b5db-88b17810dd36.png)
-
 Following the code we see a bunch of things hapenning until we get to another `call`
 
 `call sub_180004380`
@@ -153,9 +149,9 @@ This is what this function look like:
 
 ![image](https://user-images.githubusercontent.com/46232520/147892696-5aa718a5-32d2-4497-9463-06a25bd97fe5.png)
 
-To me this function just appears to be some validation for a string or something like that, so let's name it `stringValidation`.
+To me this function just appears to be some kind of validation for a string or something like that, so let's name it `stringValidation`.
 
-After that we have a bit more of `mov`, `lea` and a `call`, a `call` for `sub_1800E740`, let's take a look at it.
+After that we have a bit more of `mov`, `lea` and a `call` for `sub_1800E740`, let's take a look at it.
 
 ![image](https://user-images.githubusercontent.com/46232520/147892801-78b10fba-a5f7-4207-9fb4-8582d03db020.png)
 
@@ -171,4 +167,88 @@ But what he sends? Idk at this point. Reading through the Microsoft documentatio
  - A pointer to a report buffer
  - The size in bytes of the report buffer
 
-So I know that in the register `rcx` we have the `Hid device object`, `rdx` we have the report buffer and `r8d` the report buffer length.
+So I know that in the register `rcx` we have the `Hid device object`, `rdx` we have the report buffer and `r8d` the report buffer length. What we are interested is the `rdx` that contains the buffer, so let's follow him up;
+
+`mov     rdx, rsi` (moving the value of `rsi` to `rdx)
+
+Here we have a memcpy
+
+```
+	lea     rcx, [rsi+1]    ; Destination 		// Loading the address of the value in register rsi + 1 (offset) into rcx
+	mov     r9d, 5          ; SourceSize		// Source size = 5
+	mov     r8, r12         ; Source			// Moving value of r12 to r8, so the source is r12
+	mov     edx, r9d        ; DestinationSize	// Destination size = 5 (same register of source size r9d)
+	call    cs:memcpy_s							// Call to memcpy_s
+```
+
+Ok, so now we know that the value of the `rsi` register is the buffer report, but it's missing one byte `lea	rcx, [rsi+1]` from this we can assume that is going to copy 5 bytes from `r12` and place it starting from the address of the value of `rsi` **+ 1**, so now we gotta find the first byte of `rsi` (and from this we can assume that the buffer in total have 6 bytes: 5 bytes from the memcpy and + 1 byte from ??) 
+
+![image](https://user-images.githubusercontent.com/46232520/147917011-76ef6738-5bd2-4da4-8306-52b347fcbac9.png)
+
+Just above the section that contains the call to HidD_SetFeature we have this block, the first instruction is `mov	byte ptr [rsi], 204`, that's it, the value 204 (decimal) is the value of the first byte of `rsi`
+
+So now let's write down what we know about the buffer report: We know that is 6 bytes in size, the first byte is the value **204** and the other 5 bytes is something that comes from `r12`(the memcpy call that we saw before). 
+
+Let's find out the value of this `r12` register. 
+
+![image](https://user-images.githubusercontent.com/46232520/147923772-64aaacd0-69a3-4d75-8868-ffa166b6a251.png)
+
+This in the initial block of the function. Look at the highlighted `r12`: `mov	r12, [rsp+176]` and `push r12`
+
+From that we know that the value of `r12` comes from the `rsp` register. Let's go back to where we call this function we're seeing right now (aka. sub_18000E740).
+
+![image](https://user-images.githubusercontent.com/46232520/147923809-7eee5101-1a69-4bd6-8366-f4b8f59d10e7.png)
+
+I renamed the `sub_18000E740`to `HidSetFeature_thing`. This block I posted above is the call to the function and it's args, so let's look at it a bit:
+
+The function `HidSetFeature_thing` have the signature of a [`__fastcall`](https://docs.microsoft.com/en-us/cpp/cpp/fastcall?view=msvc-170) (__fastcall is a calling convention) this means that the order of the args is made of:
+
+	1. ECX or RCX
+	2. EDX or RDX
+	-  All other args are passed on the stack (right to left)
+	
+So the args for the call is:
+
+	- `lea	rcx, [rbp+136]`	(first arg)
+	- `lea	rdx, [rsp+96]`	(second arg)
+	- `mov	r8b, 1`		(third arg)
+	- `mov	[rsp+32], rax`	(fourth arg)
+	
+Now we know that we use in total four arguments to call this function that make the call for HidD_SetFeature.
+
+Looking back at the function `HidSetFeature_thing`, the thing we want to know is the value of this: ![image](https://user-images.githubusercontent.com/46232520/147921637-f98ceb1a-2eca-43ff-b84b-aa140fbe955f.png)
+
+So let's make a brief pause and collect what we got:
+
+	1. We know that to control the backlight we need to send something to a Hid device.
+	2. We already know that the payload we need to send is 6 bytes in size and it's first byte is the value **204**.
+	3. Following from the function `HidSetFeature_thing` we know that the value of the other 5 bytes of the payload comes from the register `r12` and the value of `r12` comes from the register `rsp`.
+	4. The fourth arg is our payload.
+
+
+Let's discover the value of our fourth arg, the value comes from this: `mov	[rsp+32], rax` and the value stored in the `rax` register is `lea rax, [rsp+96]`, so let's go and see what comes from this `rsp+96` (don't forget that the payload is 5 bytes, to we'll search from `rsp+96` until `rsp+100` or from `rsp+96` to `rsp+92`:
+
+The range `rsp+96~rsp+92` is already discarted because we don't see anything that relate to these address so let's put it aside and work on the other range.
+
+![image](https://user-images.githubusercontent.com/46232520/147924418-863cf72a-8125-4c2d-9df5-b80b21ca31e7.png)
+
+From this picture we already got two bytes, the values of `rsp+96` and `rsp+100` so write that down:
+	- `rsp+96` = 0
+	- `rsp+100`
+		- The value comes from the `bl` register.
+		- Meaning that the value of the `rsp+100` is the byte 0 from the register `rbx`.
+		- You can see this instruction `mov	edx, ebx		; Block number` (that we discovered a long time ago) this means that the value in the register `ebx` (bytes 0-3 of the register `rbx` is the block number.
+		- So I think we can assume that the `bl` register holds the block number.
+	
+![image](https://user-images.githubusercontent.com/46232520/147925444-c1373ee5-6388-4ae0-af0e-d9d54d21e0d0.png)
+
+And now we found the other 3 bytes, `rsp+97`, `rsp+98` and `rsp+99`, let's collect everything and put in order:
+	
+	- Payload
+		- First byte:	204
+		- Second byte:	0	(`rsp+96`)
+		- Third byte:	style	(`rsp+97`)
+		- Fourth byte:	color	(`rsp+98`)
+		- Fifth byte:	3	(`rsp+99`) We don't know what this is yet
+		- Sixth byte:	block	(`rsp+100`)
+		

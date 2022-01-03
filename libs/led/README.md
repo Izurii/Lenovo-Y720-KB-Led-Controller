@@ -236,12 +236,13 @@ The range `rsp+96~rsp+92` is already discarted because we don't see anything tha
 
 From this picture we already got two bytes, the values of `rsp+96` and `rsp+100` so write that down:
 
-	- `rsp+96` = 0
-	- `rsp+100`
-		- The value comes from the `bl` register.
-		- Meaning that the value of the `rsp+100` is the byte 0 from the register `rbx`.
-		- You can see this instruction `mov	edx, ebx		; Block number` (that we discovered a long time ago) this means that the value in the register `ebx` (bytes 0-3 of the register `rbx` is the block number.
-		- So I think we can assume that the `bl` register holds the block number.
+	- "rsp+96" = 0
+	- "rsp+100"
+		- The value comes from the "bl" register.
+		- Meaning that the value of the "rsp+100" is the byte 0 from the register "rbx".
+		- You can see this instruction "mov edx, ebx	; Block number" (that we discovered a long time ago)
+		- This means that the value in the register "ebx" (bytes 0-3 of the register "rbx" is the block number.
+		- So I think we can assume that the "bl" register holds the block number.
 	
 ![image](https://user-images.githubusercontent.com/46232520/147925444-c1373ee5-6388-4ae0-af0e-d9d54d21e0d0.png)
 
@@ -249,9 +250,9 @@ And now we found the other 3 bytes, `rsp+97`, `rsp+98` and `rsp+99`, let's colle
 	
 	- Payload
 		- First byte:	204
-		- Second byte:	0	(`rsp+96`)
-		- Third byte:	style	(`rsp+97`)
-		- Fourth byte:	color	(`rsp+98`)
-		- Fifth byte:	3	(`rsp+99`) We don't know what this is yet
-		- Sixth byte:	block	(`rsp+100`)
+		- Second byte:	0	(rsp+96)
+		- Third byte:	style	(rsp+97)
+		- Fourth byte:	color	(rsp+98)
+		- Fifth byte:	3	(rsp+99) We don't know what this is yet
+		- Sixth byte:	block	(rsp+100)
 		

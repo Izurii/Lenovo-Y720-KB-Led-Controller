@@ -142,3 +142,33 @@ Looking at the debug thing we can see that the second, third and fourth argument
 So now we know that `edx` holds the value of the "block", `r8d` holds the value of the color and `r9d` the style.
 
 After some renaming we get to this:
+
+![image](https://user-images.githubusercontent.com/46232520/147892617-6aad9008-802f-4dc1-b5db-88b17810dd36.png)
+
+Following the code we see a bunch of things hapenning until we get to another `call`
+
+`call sub_180004380`
+
+This is what this function look like:
+
+![image](https://user-images.githubusercontent.com/46232520/147892696-5aa718a5-32d2-4497-9463-06a25bd97fe5.png)
+
+To me this function just appears to be some validation for a string or something like that, so let's name it `stringValidation`.
+
+After that we have a bit more of `mov`, `lea` and a `call`, a `call` for `sub_1800E740`, let's take a look at it.
+
+![image](https://user-images.githubusercontent.com/46232520/147892801-78b10fba-a5f7-4207-9fb4-8582d03db020.png)
+
+This is what we need to look:
+
+![image](https://user-images.githubusercontent.com/46232520/147892816-9b96efc2-6189-49f0-8e62-1cab7396b4be.png)
+
+The call for the [`HidD_SetFeature`](https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/hidsdi/nf-hidsdi-hidd_setfeature), this is the function that sends something to a Hid device. 
+
+But what he sends? Idk at this point. Reading through the Microsoft documentation about that function we see that we need three arguments to call this function:
+
+ - A handle of a Hid device object (some kind of file descriptor from linux)
+ - A pointer to a report buffer
+ - The size in bytes of the report buffer
+
+So I know that in the register `rcx` we have the `Hid device object`, `rdx` we have the report buffer and `r8d` the report buffer length.

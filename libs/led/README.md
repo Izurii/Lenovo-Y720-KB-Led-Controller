@@ -174,11 +174,11 @@ So I know that in the register `rcx` we have the `Hid device object`, `rdx` we h
 Here we have a memcpy
 
 ```
-	lea     rcx, [rsi+1]    ; Destination 		// Loading the address of the value in register rsi + 1 (offset) into rcx
-	mov     r9d, 5          ; SourceSize		// Source size = 5
-	mov     r8, r12         ; Source			// Moving value of r12 to r8, so the source is r12
-	mov     edx, r9d        ; DestinationSize	// Destination size = 5 (same register of source size r9d)
-	call    cs:memcpy_s							// Call to memcpy_s
+lea     rcx, [rsi+1]	; Destination 		// Loading the address of the value in register rsi + 1 (offset) into rcx
+mov     r9d, 5		; SourceSize		// Source size = 5
+mov     r8, r12		; Source		// Moving value of r12 to r8, so the source is r12
+mov     edx, r9d	; DestinationSize	// Destination size = 5 (same register of source size r9d)
+call    cs:memcpy_s				// Call to memcpy_s
 ```
 
 Ok, so now we know that the value of the `rsi` register is the buffer report, but it's missing one byte `lea	rcx, [rsi+1]` from this we can assume that is going to copy 5 bytes from `r12` and place it starting from the address of the value of `rsi` **+ 1**, so now we gotta find the first byte of `rsi` (and from this we can assume that the buffer in total have 6 bytes: 5 bytes from the memcpy and + 1 byte from ??) 
@@ -209,11 +209,13 @@ The function `HidSetFeature_thing` have the signature of a [`__fastcall`](https:
 	
 So the args for the call is:
 
-	- `lea	rcx, [rbp+136]`	(first arg)
-	- `lea	rdx, [rsp+96]`	(second arg)
-	- `mov	r8b, 1`		(third arg)
-	- `mov	[rsp+32], rax`	(fourth arg)
-	
+```
+lea	rcx, [rbp+136]	// First arg
+lea	rdx, [rsp+96]	// Second arg
+mov	r8b, 1		// Third arg
+mov	[rsp+32], rax	// Fourth arg
+```
+
 Now we know that we use in total four arguments to call this function that make the call for HidD_SetFeature.
 
 Looking back at the function `HidSetFeature_thing`, the thing we want to know is the value of this: ![image](https://user-images.githubusercontent.com/46232520/147921637-f98ceb1a-2eca-43ff-b84b-aa140fbe955f.png)

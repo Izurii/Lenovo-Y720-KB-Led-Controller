@@ -228,9 +228,9 @@ So let's make a brief pause and collect what we got:
 	4. The fourth arg is our payload.
 
 
-Let's discover the value of our fourth arg, the value comes from this: `mov	[rsp+32], rax` and the value stored in the `rax` register is `lea rax, [rsp+96]`, so let's go and see what comes from this `rsp+96` (don't forget that the payload is 5 bytes, to we'll search from `rsp+96` until `rsp+100` or from `rsp+96` to `rsp+92`:
+Let's discover the value of our fourth arg, the value comes from this: `mov	[rsp+32], rax` and the value stored in the `rax` register is `lea rax, [rsp+96]`, so let's go and see what comes from this `rsp+96` (don't forget that the payload is 5 bytes, so we'll search from `rsp+96` until `rsp+100` or from `rsp+92` to `rsp+96`:
 
-The range `rsp+96~rsp+92` is already discarted because we don't see anything that relate to these address so let's put it aside and work on the other range.
+The range `rsp+92~rsp+96` is already discarted because we don't see anything that relate to these address so let's put it aside and work on the other range.
 
 ![image](https://user-images.githubusercontent.com/46232520/147924418-863cf72a-8125-4c2d-9df5-b80b21ca31e7.png)
 
@@ -327,7 +327,7 @@ int main() {
 }
 ```
 
-If we compile (to compile it just run a `gcc filename.cc -o executable`) and run this, you'll see nothing... Nothing has changed, we didn't get an error but the code doesn't work. What could be wrong??
+If we compile (to compile it just run a `g++ filename.cc -o executable`) and run this, you'll see nothing... Nothing has changed, we didn't get an error but the code doesn't work. What could be wrong??
 
 Let's go back to the IDA and see if we missed something. I looked again at the two main functions that we found earlier `sub_1800286C0` (this is the function related to the `Y720LedSetHelper::SetLEDStatusEx`) and `HidSetFeature_thing`, I didn't find anything useful.
 
@@ -370,3 +370,121 @@ From what we saw earlier, we can assume that:
 	- The first byte is **204**
 	
 We just need to discover what's the value of the 5 other bytes.
+
+```
+nop
+lea     rcx, [rbx+136]
+lea     rax, [rsp+96]
+mov     [rsp+32], rax
+mov     r8b, 1
+lea     rdx, [rsp+48]
+call    HidSetFeature_thing
+```
+
+This is the same thing we saw before when we're analysing the payload sent to change the color etc. So what we want is the value of `rsp+32` that comes from  `rax` and `rax` is the address of`rsp+96` (don't forget that the payload is 5 bytes, so we'll search from `rsp+96` until `rsp+100` or from `rsp+92` to `rsp+96`):
+
+The range `rsp+92~rsp+96` is already discarted because we don't see anything that relate to these address so let's put it aside and work on the other range.
+
+```
+mov     byte ptr [rsp+96], 9
+```
+
+The function `sub_180028810` is relatively small so we didn't spent much time searching for this. That instruction is the only thing that I think the payload is, so we have 1 byte?? 
+
+So now we got a payload that is only two bytes in size, weird but let's follow through and see what happens if we just send a payload of 2 bytes in size.
+
+```
+#include <sys/ioctl.h>
+#include <linux/hidraw.h>
+#include <fcntl.h>
+
+int main() {
+	
+	int fileDescriptor = open("/dev/hidraw0", O_WRONLY);
+	
+	// Payload
+	// First byte - 204
+	// Second byte - 0
+	// Third byte - block style
+	// Fourth byte - block color
+	// Fifth byte - 3
+	// Sixth byte - block
+	unsigned char buffer[6] = {204, 0, 1, 1, 3, 1};
+	
+	// Doing the system call
+	ioctl(fileDescriptor, HIDIOCSFEATURE(6), buffer);
+
+	unsigned char twoBytesBuffer[2] = {204, 9};
+
+	// Doing the weird 2 bytes thing
+	ioctl(fileDescriptor, HIDIOCSFEATURE(2), twoBytesBuffer);
+
+	return 0;
+}
+```
+
+With this thing compiled let's if it's working or not...
+
+![image](https://user-images.githubusercontent.com/46232520/148061056-55f34bd2-ce6f-43c1-a994-c03b40915677.png)
+
+Yesss, it worked!!!! Idk what those two bytes means but it worked so I'm not questioning it.
+
+Let's collect our things and see what we've got at this point: 
+
+	- We succeded in changing something in the backlight
+	- The payload:
+		- Is 6 bytes in size
+		- The first two bytes are hard-coded (204 and 0)
+		- The other four bytes defines:
+			- 1º The block style
+			- 2º The block color
+			- 3º ???
+			- 4º The block
+	- After we send the payload we need to "end" or "save" our changes using a payload of two bytes
+		- The payload is hard-coded:
+			- The first byte is 204
+			- The second byte is 9
+			
+That's really good, so now we gotta discover what the third byte of the payload is and we're done. To test it, I just wrote a simple code:
+
+```
+#include <sys/ioctl.h>
+#include <linux/hidraw.h>
+#include <fcntl.h>
+
+int main() {
+	
+	int fileDescriptor = open("/dev/hidraw0", O_WRONLY);
+	
+	// Payload
+	// First byte - 204
+	// Second byte - 0
+	// Third byte - block style
+	// Fourth byte - block color
+	// Fifth byte - 3
+	// Sixth byte - block
+	
+	unsigned char buffer[6] = {204, 0, 1, 1, 0, 0};
+	unsigned char buffer[6] = {204, 0, 1, 1, 1, 1};
+	unsigned char buffer[6] = {204, 0, 1, 1, 2, 2};
+	unsigned char buffer[6] = {204, 0, 1, 1, 3, 3};
+	
+	// Doing the system calls
+	ioctl(fileDescriptor, HIDIOCSFEATURE(6), bufferToFirstBlock);
+	ioctl(fileDescriptor, HIDIOCSFEATURE(6), bufferToSecondBlock);
+	ioctl(fileDescriptor, HIDIOCSFEATURE(6), bufferToThirdBlock);
+	ioctl(fileDescriptor, HIDIOCSFEATURE(6), bufferToFourthBlock);
+	
+	// Save buffer??
+	unsigned char twoBytesBuffer[2] = {204, 9};
+
+	// Doing the weird save/end 2 bytes thing
+	ioctl(fileDescriptor, HIDIOCSFEATURE(2), twoBytesBuffer);
+
+	return 0;
+}
+```
+
+Just to test it out I put the same color and style in every block of the keyboard, just changing the value of the third byte. I tried to capture a photo but the difference is so subtle that my camera can't differentiate anything, but I'll tell you what I found. The third byte is the brightness of the block, further testing I saw that we can go up until five, beyond that point I couldn't see any difference at all. 
+
+So our driver is better than the Lenovo one, we can config each block brightness individually. 

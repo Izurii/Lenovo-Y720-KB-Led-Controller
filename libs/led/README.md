@@ -255,4 +255,79 @@ And now we found the other 3 bytes, `rsp+97`, `rsp+98` and `rsp+99`, let's colle
 		- Fourth byte:	color	(rsp+98)
 		- Fifth byte:	3	(rsp+99) We don't know what this is yet
 		- Sixth byte:	block	(rsp+100)
-		
+	
+First two bytes we just ignore them as is hard-coded into the thing we don't need to mess with that. I think the possible values for each byte is:
+
+	- Third byte:	0~4	(Because we have 4 styles that we can select in the Lenovo Nerve Center)
+	- Fourth byte:	0-19	(We have 19 colors in total to select, including the one that isn't a color)
+	- Fifth byte:	3	(Later we'll be messing with this)
+	- Sixth byte:	0~3	(This is not that hard to guess, the keyboard have four blocks that we can select the color, so the range 0~3)
+	
+Knowing that now we need to make a prototype, so let's do some code... First I do thing we need to find the correct HID device to send the payload. 
+
+You can run this:
+
+`for dir in */; do echo Device:$dir && cat /sys/class/hidraw/$dir/device/uevent && echo ; done` 
+
+This is going to list all the hidraw devices, the output of this command is something like that:
+
+```
+izurii@pop-os:/sys/class/hidraw$ for dir in */; do echo Device:$dir && cat /sys/class/hidraw/$dir/device/uevent && echo ; done
+Device:hidraw0/
+DRIVER=hid-generic
+HID_ID=0018:0000048D:0000837A
+HID_NAME=ITE33D1:00 048D:837A
+HID_PHYS=i2c-ITE33D1:00
+HID_UNIQ=
+MODALIAS=hid:b0018g0001v0000048Dp0000837A
+
+Device:hidraw1/
+DRIVER=logitech-djreceiver
+HID_ID=0003:0000046D:0000C53F
+HID_NAME=Logitech USB Receiver
+HID_PHYS=usb-0000:00:14.0-1/input0
+HID_UNIQ=
+MODALIAS=hid:b0003g0001v0000046Dp0000C53F
+
+Device:hidraw2/
+DRIVER=logitech-djreceiver
+HID_ID=0003:0000046D:0000C53F
+HID_NAME=Logitech USB Receiver
+HID_PHYS=usb-0000:00:14.0-1/input1
+HID_UNIQ=
+MODALIAS=hid:b0003g0001v0000046Dp0000C53F
+```
+
+From this list you can search device that the name starts with `ITE33D1...` that device will be the one wee need to send the payload.
+
+Let's go back to coding, now we need to know [how to send a buffer to a HID device](https://lmgtfy.app/?q=how+to+send+a+buffer+to+a+hid+device). With the knowledge in mind we just code something really simple:
+
+```
+#include <sys/ioctl.h>
+#include <linux/hidraw.h>
+#include <fcntl.h>
+
+int main() {
+	
+	int fileDescriptor = open("/dev/hidraw0", O_WRONLY);
+	
+	// Payload
+	// First byte - 204
+	// Second byte - 0
+	// Third byte - block style
+	// Fourth byte - block color
+	// Fifth byte - 3
+	// Sixth byte - block
+	unsigned char buffer[6] = {204, 0, 1, 1, 3, 1};
+	
+	// Doing the system call
+	ioctl(fileDescriptor, HIDIOCSFEATURE(6), buffer);
+
+	return 0;
+}
+
+```
+
+If we compile (to compile it just run a `gcc filename.cc -o executable`) and run this, you'll see nothing... Nothing has changed, we didn't get an error but the code doesn't work. What could be wrong??
+
+Let's go back to the IDA and see if we missed something.

@@ -504,3 +504,5 @@ int main() {
 Just to test it out I put the same color and style in every block of the keyboard, just changing the value of the fifth byte. I tried to capture a photo but the difference is so subtle that my camera can't differentiate anything, but I'll tell you what I found. The fifth byte is the brightness of the block, further testing I saw that we can go up until five, beyond that point I couldn't see any difference at all. 
 
 So our driver is better than the Lenovo one, we can config each block brightness individually. 
+
+That's all folks. The rest is up to you.

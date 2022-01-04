@@ -82,11 +82,14 @@ yarn start
 
 # Good to know
 
--   Both scripts (build and start) has a lot of things behind doing all the dirty work.
-    -   `yarn run build` or `yarn build` do these actions:
-        -   As soon as you run the command, yarn will trigger the "prebuild" script, the prebuild script is going to run the sh file `./scripts/prebuild.sh`. This shell script is going to run all the things needed to build the application, take a look at the script and see what it does.
-        -   The same logic applies to `yarn run start` but it runs the file `./scripts/prestart.sh`
--   You can take a look at the README inside the folder `./scripts` if you want more details in what those scripts is doing.
+ - Both scripts (build and start) has a lot of things behind doing all the dirty work.
+ - `yarn run build` or `yarn build` do these actions:
+ 	- As soon as you run the command, yarn will trigger the "prebuild" script, the prebuild script is going to run the sh file `./scripts/prebuild_start.sh`. This shell script is going to run all the things needed to build the application, take a look at the script and see what it does.
+ 	- The same logic applies to `yarn run start` it runs the file `./scripts/prebuild_start.sh`
+ - You can take a look at the [README inside the folder `./scripts`](./scripts/README.md) if you want more details in what those scripts is doing.
+ - I wrote some details how the addons I built for the app works
+ 	- [LED Node Native Addon Documentation](./libs/led/README.md)
+ 	- [Hotkey Monitor Node Native Addon Documentation](./libs/hotkey/README.md)
 
 [depstat-url]: https://david-dm.org/Izurii/Lenovo-Y720-KB-Led-Controller
 [depstat-image]: https://david-dm.org/Izurii/Lenovo-Y720-KB-Led-Controller.svg?style=flat

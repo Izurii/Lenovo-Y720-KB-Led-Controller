@@ -331,8 +331,20 @@ If we compile (to compile it just run a `gcc filename.cc -o executable`) and run
 
 Let's go back to the IDA and see if we missed something. I looked again at the two main functions that we found earlier `sub_1800286C0` (this is the function related to the `Y720LedSetHelper::SetLEDStatusEx`) and `HidSetFeature_thing`, I didn't find anything useful.
 
-For the sake of curiosity, let's see who call the function `sub_1800286C0`:
+For the sake of curiosity, let's see who calls the function `sub_1800286C0`:
 
 ![image](https://user-images.githubusercontent.com/46232520/147994959-c27d6b57-78a4-409c-a046-a4b5145aa68a.png)
 
 Okay, we have five different locations to go through, let's do one by one.
+
+In the first XREF we have two calls to the function `sub_1800286C0` (in the end the first and second xref listed are in the same function):
+
+![image](https://user-images.githubusercontent.com/46232520/147996070-83656863-3812-4573-8231-4f36a3b4de93.png)
+
+The third and fourth XREF are in the same function too:
+
+![image](https://user-images.githubusercontent.com/46232520/147996283-f909648d-8695-43d4-a13b-669a00683c46.png)
+
+And the last one, the fifth XREF:
+
+![image](https://user-images.githubusercontent.com/46232520/147996366-d0289b6b-d5d9-4eb9-9a91-7c33361ea750.png)

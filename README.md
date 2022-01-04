@@ -35,6 +35,10 @@ SUBSYSTEM=="hidraw", ATTRS{name}=="ITE33D1:00", MODE="0666"
 
 Reboot.
 
+# I invite you to take a look at the branch `refact/v2`
+
+[Refact/v2 branch link](https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller/tree/refact/v2)
+
 # How to build it yourself
 
 ```

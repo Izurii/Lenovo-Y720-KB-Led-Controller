@@ -325,9 +325,14 @@ int main() {
 
 	return 0;
 }
-
 ```
 
 If we compile (to compile it just run a `gcc filename.cc -o executable`) and run this, you'll see nothing... Nothing has changed, we didn't get an error but the code doesn't work. What could be wrong??
 
-Let's go back to the IDA and see if we missed something.
+Let's go back to the IDA and see if we missed something. I looked again at the two main functions that we found earlier `sub_1800286C0` (this is the function related to the `Y720LedSetHelper::SetLEDStatusEx`) and `HidSetFeature_thing`, I didn't find anything useful.
+
+For the sake of curiosity, let's see who call the function `sub_1800286C0`:
+
+![image](https://user-images.githubusercontent.com/46232520/147994959-c27d6b57-78a4-409c-a046-a4b5145aa68a.png)
+
+Okay, we have five different locations to go through, let's do one by one.

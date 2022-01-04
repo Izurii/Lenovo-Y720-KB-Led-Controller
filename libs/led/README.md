@@ -107,11 +107,11 @@ As soon as I was looking through the list of files and dirs I thing I saw someth
 
 Take note of that DLL, but looking at the rest, nothing rings a bell, just some led profiles, and other dlls, exe...
 
-So let get's our hand dirty, open IDA and load the `LedSettingsPlugin` dll.
+So let's get our hands dirty, open IDA and load the `LedSettingsPlugin.dll` file.
 
-First thing that may appear is to load some other DLL `OLEAUT32`, I grab this dll from my System32 folder from Windows and load into IDA and now we wait a bit so IDA can do his things.
+First thing that may appear is to load some other DLL `OLEAUT32`, I grab this dll from the System32 folder inside my Windows installation and load into IDA and now we wait a bit to IDA do his things.
 
-Pressing Shift+F12 IDA should show you a lot of strings that he found on the file you loaded. So let's search what we're looking for LEDS!
+Pressing Shift+F12 IDA should show you a lot of strings that he found on the file you loaded. So let's search what we're looking for.
 
 ![image](https://user-images.githubusercontent.com/46232520/147886320-a7b97196-35f0-4421-83f7-a46cf4b5838c.png)
 
@@ -145,17 +145,17 @@ Following the code we see a bunch of things hapenning until we get to another `c
 
 `call sub_180004380`
 
-This is what this function look like:
+This is what the function `sub_180004380` look like:
 
 ![image](https://user-images.githubusercontent.com/46232520/147892696-5aa718a5-32d2-4497-9463-06a25bd97fe5.png)
 
 To me this function just appears to be some kind of validation for a string or something like that, so let's name it `stringValidation`.
 
-After that we have a bit more of `mov`, `lea` and a `call` for `sub_1800E740`, let's take a look at it.
+After that we have a bit more of `mov`, `lea` and a `call` for `sub_1800E740`, let's take a look at `sub_1800E740`.
 
 ![image](https://user-images.githubusercontent.com/46232520/147892801-78b10fba-a5f7-4207-9fb4-8582d03db020.png)
 
-This is what we need to look:
+This is what I think we need to look:
 
 ![image](https://user-images.githubusercontent.com/46232520/147892816-9b96efc2-6189-49f0-8e62-1cab7396b4be.png)
 
@@ -167,7 +167,7 @@ But what he sends? Idk at this point. Reading through the Microsoft documentatio
  - A pointer to a report buffer
  - The size in bytes of the report buffer
 
-So I know that in the register `rcx` we have the `Hid device object`, `rdx` we have the report buffer and `r8d` the report buffer length. What we are interested is the `rdx` that contains the buffer, so let's follow him up;
+So I know that in the register `rcx` we have the `Hid device object`, `rdx` we have the report buffer and `r8d` the report buffer length. What we are interested is the `rdx` that contains the buffer, so let's follow him;
 
 `mov     rdx, rsi` (moving the value of `rsi` to `rdx`)
 
@@ -185,9 +185,9 @@ Ok, so now we know that the value of the `rsi` register is the buffer report, bu
 
 ![image](https://user-images.githubusercontent.com/46232520/147917011-76ef6738-5bd2-4da4-8306-52b347fcbac9.png)
 
-Just above the section that contains the call to HidD_SetFeature we have this block, the first instruction is `mov	byte ptr [rsi], 204`, that's it, the value 204 (decimal) is the value of the first byte of `rsi`
+Just above the section that contains the call to HidD_SetFeature we have a block of instructions and the first instruction is `mov	byte ptr [rsi], 204`, that's it, the value 204 (decimal) is the value of the first byte of `rsi`
 
-So now let's write down what we know about the buffer report.
+So now let's write down what we know about the buffer.
 
 We know that is 6 bytes in size, the first byte is the value **204** and the other 5 bytes is something that comes from `r12`(the memcpy call that we saw before). 
 
@@ -228,7 +228,6 @@ So let's make a brief pause and collect what we got:
 	2. We already know that the payload we need to send is 6 bytes in size and it's first byte is the value 204.
 	3. Following from the function "HidSetFeature_thing" we know that the value of the other 5 bytes of the payload comes from the register "r12" and the value of "r12" comes from the register "rsp".
 	4. The fourth arg is our payload.
-
 
 Let's discover the value of our fourth arg, the value comes from this: `mov	[rsp+32], rax` and the value stored in the `rax` register is `lea rax, [rsp+96]`, so let's go and see what comes from this `rsp+96` (don't forget that the payload is 5 bytes, so we'll search from `rsp+96` until `rsp+100` or from `rsp+92` to `rsp+96`:
 
@@ -279,7 +278,7 @@ First two bytes we just ignore them as is hard-coded into the thing we don't nee
 	- Fifth byte:	3	(Later we'll be messing with this)
 	- Sixth byte:	0~3	(This is not that hard to guess, the keyboard have four blocks that we can select the color, so the range 0~3)
 	
-Knowing that now we need to make a prototype, so let's do some code... First I do thing we need to find the correct HID device to send the payload. 
+Knowing that, now we need to make a prototype, so let's do some code... First I do thing we need to find the correct HID device to send the payload. 
 
 You can run this:
 
@@ -316,7 +315,7 @@ MODALIAS=hid:b0003g0001v0000046Dp0000C53F
 
 From this list you can search device that the name starts with `ITE33D1...` that device will be the one wee need to send the payload.
 
-Let's go back to coding, now we need to know [how to send a buffer to a HID device](https://lmgtfy.app/?q=how+to+send+a+buffer+to+a+hid+device). With the knowledge in mind we just code something really simple:
+Let's go back to coding, now we need to know [how to send a buffer to a HID device](https://lmgtfy.app/?q=how+to+send+a+buffer+to+a+hid+device). With the knowledge in hands we just code something simple:
 
 ```
 #include <sys/ioctl.h>
@@ -343,7 +342,7 @@ int main() {
 }
 ```
 
-If we compile (to compile it just run a `g++ filename.cc -o executable`) and run this, you'll see nothing... Nothing has changed, we didn't get an error but the code doesn't work. What could be wrong??
+If we compile (to compile it just run a `g++ filename.cc -o executable_name`) and run the compiled executable, you'll see nothing... Nothing has changed in the keyboard, we didn't get an error but the code doesn't work. What could be wrong??
 
 Let's go back to the IDA and see if we missed something. I looked again at the two main functions that we found earlier `sub_1800286C0` (this is the function related to the `Y720LedSetHelper::SetLEDStatusEx`, I renamed it to `SetLedStatus`) and `HidSetFeature_thing`, I didn't find anything useful.
 
@@ -369,13 +368,13 @@ What I noticed while taking a look at the screenshots are that the first/second 
 
 ![image](https://user-images.githubusercontent.com/46232520/147997210-f647478f-40dc-43fb-a7d7-70162249e486.png)
 
-That's looking promising, we have a call to the `stringValidation` we renamed earlier and the `HidSetFeature_thing`, so after the payload is sent the driver sent something more. Before we go any further, let's just take a peek of the fifth xref.
+That's looking promising, we have a call to the `stringValidation` we renamed earlier and the `HidSetFeature_thing`, so after the payload is sent the driver send something more. Before we go any further, let's just take a peek of the fifth xref.
 
-At the beginning of the function `sub_180027D90` (fifth xref) we have a call to the function `sub_180028DD0`, after this we have some debug logging thing and at the end we have the call for the function `SetLedStatus`, so no call to the `sub_180028810`. So we just need to see the function `sub_180028DD0`:
+At the beginning of the function `sub_180027D90` (fifth xref) we have a call to the function `sub_180028DD0`, after this we have some debug logging thing and at the end we have the call for the function `SetLedStatus`, so no call to the `sub_180028810` that we found in the others xrefs. So we just need to see the function `sub_180028DD0` to completely discard the fifth xref:
 
 ![image](https://user-images.githubusercontent.com/46232520/147997630-54ce1ccd-f4eb-4995-91e7-826bd9b00ab7.png)
 
-I did check all things I could see in this function and I could not see anything that caught my eyes, just a bunch of windows registry things, so let's go back to `sub_180028810`.
+I did check all things I could see in this function and I could not see anything that caught my attention, just a bunch of windows registry things, so let's go back to `sub_180028810` that we found before.
 
 Let's decode what's is being sent to function `HidSetFeature_thing` and if possible, code into our prototype.
 
@@ -397,7 +396,7 @@ lea     rdx, [rsp+48]
 call    HidSetFeature_thing
 ```
 
-This is the same thing we saw before when we're analysing the payload sent to change the color etc. So what we want is the value of `rsp+32` that comes from  `rax` and `rax` is the address of`rsp+96` (don't forget that the payload is 5 bytes, so we'll search from `rsp+96` until `rsp+100` or from `rsp+92` to `rsp+96`):
+This is the same thing we saw before when we're analysing the payload sent to change the color, style etc. So what we want is the value of `rsp+32` that comes from  `rax` and `rax` is the address of`rsp+96` (don't forget that the payload is 5 bytes, so we'll search from `rsp+96` until `rsp+100` or from `rsp+92` to `rsp+96`):
 
 The range `rsp+92~rsp+96` is already discarted because we don't see anything that relate to these address so let's put it aside and work on the other range.
 
@@ -405,7 +404,7 @@ The range `rsp+92~rsp+96` is already discarted because we don't see anything tha
 mov     byte ptr [rsp+96], 9
 ```
 
-The function `sub_180028810` is relatively small so we didn't spent much time searching for this. That instruction is the only thing that I think the payload is, so we have only 2 bytes?? 
+The function `sub_180028810` is relatively small so we didn't spent much time searching for this. That instruction is the only thing that I think the payload is, so we have only 2 bytes??
 
 So now we got a payload that is only two bytes in size, weird but let's follow through and see what happens if we just send a payload of 2 bytes in size.
 
@@ -439,11 +438,11 @@ int main() {
 }
 ```
 
-With this thing compiled let's if it's working or not...
+With this thing compiled let's test if it's working or not...
 
 ![image](https://user-images.githubusercontent.com/46232520/148061056-55f34bd2-ce6f-43c1-a994-c03b40915677.png)
 
-Yesss, it worked!!!! Idk what those two bytes means but it worked so I'm not questioning it.
+Yesss, it worked!! Idk what those two bytes means but it worked so I'm not questioning it.
 
 Let's collect our things and see what we've got at this point: 
 

@@ -55,7 +55,7 @@ Reboot your PC or use this command to reload and trigger the new udev rules `sud
 
 # Requirements to build/start
 
--   GCC
+-   GCC/G++
 -   yarn
 -   libevdev (the needed files are already in the ./libs/hotkey/libs folder, but you never know ¯\_(ツ)\_/¯ )
 -   node-gyp (I do recommend to globally install it using either `npm install -g node-gyp` or `yarn global add node-gyp`)
@@ -88,7 +88,7 @@ yarn start
  	- The same logic applies to `yarn run start` it runs the file `./scripts/prebuild_start.sh`
  - You can take a look at the [README inside the folder `./scripts`](./scripts/README.md) if you want more details in what those scripts is doing.
  - I wrote some details how the addons I built for the app works
- 	- [LED Node Native Addon Documentation](./libs/led/README.md)
+ 	- [LED Controller Node Native Addon Documentation](./libs/led/README.md)
  	- [Hotkey Monitor Node Native Addon Documentation](./libs/hotkey/README.md)
 
 [depstat-url]: https://david-dm.org/Izurii/Lenovo-Y720-KB-Led-Controller

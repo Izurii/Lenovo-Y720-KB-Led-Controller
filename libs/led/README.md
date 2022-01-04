@@ -203,8 +203,8 @@ I renamed the `sub_18000E740`to `HidSetFeature_thing`. This block I posted above
 
 The function `HidSetFeature_thing` have the signature of a [`__fastcall`](https://docs.microsoft.com/en-us/cpp/cpp/fastcall?view=msvc-170) (__fastcall is a calling convention) this means that the order of the args is made of:
 
-	1. ECX or RCX
-	2. EDX or RDX
+	1. RCX
+	2. RDX
 	-  All other args are passed on the stack (right to left)
 	
 So the args for the call is:
@@ -348,3 +348,25 @@ The third and fourth XREF are in the same function too:
 And the last one, the fifth XREF:
 
 ![image](https://user-images.githubusercontent.com/46232520/147996467-dd624f41-1668-4c48-ba9c-172784bf0cd1.png)
+
+What I noticed while taking a look at the screenshots are that the first/second and third/fourth xref is somewhat similar, the thing that really caught my eyes is that after the call for the function `sub_1800286C0` we have a call to the function `sub_180028810` in both first/second and third/fourth xref, so let's take a look at that before we go to the fifth xref.
+
+![image](https://user-images.githubusercontent.com/46232520/147997210-f647478f-40dc-43fb-a7d7-70162249e486.png)
+
+That's looking promising, we have a call to the `stringValidation` we renamed earlier and the `HidSetFeature_thing`, so after the payload is sent the driver sent something more. Before we go any further, let's just take a peek of the fifth xref.
+
+At the beginning of the function `sub_180027D90` (fifth xref) we have a call to the function `sub_180028DD0`, after this we have some debug logging thing and at the end we have the call for the function `sub_1800286C0`, so no call to the `sub_180028810`. So we just need to see the function `sub_180028DD0`:
+
+![image](https://user-images.githubusercontent.com/46232520/147997630-54ce1ccd-f4eb-4995-91e7-826bd9b00ab7.png)
+
+I did check all things I could see in this function and I could not see anything that caught my eyes, just a bunch of windows registry things, so let's go back to `sub_180028810`.
+
+Let's decode what's is being sent to function `HidSetFeature_thing` and if possible, code into our prototype.
+
+From what we saw earlier, we can assume that:
+
+	- The fourth arg is the payload
+	- The payload has 6 bytes in size
+	- The first byte is **204**
+	
+We just need to discover what's the value of the 5 other bytes.

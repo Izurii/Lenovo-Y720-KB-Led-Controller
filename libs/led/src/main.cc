@@ -136,15 +136,15 @@ Boolean setKeyboardOptions(const CallbackInfo &info)
 			204,
 			0,
 			static_cast<unsigned char>(backlightMode), // style
-			static_cast<unsigned char>(options[i][0]), //color
-			static_cast<unsigned char>(options[i][1]), //brightness
+			static_cast<unsigned char>(options[i][0]), // color
+			static_cast<unsigned char>(options[i][1]), // brightness
 			static_cast<unsigned char>(i)};			   // block
 
 		ioctl(fd, HIDIOCSFEATURE(6), buffer);
 	}
 
-	unsigned char finalBuffer[6] = {204, 9, 0, 0, 0, 0};
-	ioctl(fd, HIDIOCSFEATURE(6), finalBuffer);
+	unsigned char finalBuffer[2] = {204, 9};
+	ioctl(fd, HIDIOCSFEATURE(2), finalBuffer);
 
 	return Boolean::New(env, true);
 }

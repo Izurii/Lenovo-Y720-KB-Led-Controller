@@ -506,3 +506,21 @@ Just to test it out I put the same color and style in every block of the keyboar
 So our driver is better than the Lenovo one, we can config each block brightness individually. 
 
 That's all folks. The rest is up to you.
+
+# Useful links
+
+ - About Calling conventions
+ 	- [From Microsoft](https://docs.microsoft.com/en-us/cpp/build/x64-calling-convention?view=msvc-170)
+ 	- [Good article, easier to understand than Microsoft's one](https://www.vanimpe.eu/2018/01/25/understanding-calling-conventions-malware-analysis/) 
+ - HID (Human Interface Device)
+ 	- [Introduction to HID - Microsoft](https://docs.microsoft.com/en-us/windows-hardware/drivers/hid/)
+ 	- [A bit more of HID development - Microsoft](https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/_hid/#io-control-codes)
+ 	- [HID - Linux Kernel](https://www.kernel.org/doc/html/latest/hid/index.html)
+ 	- [About RAW access to HID - Linux Kernel](https://www.kernel.org/doc/html/latest/hid/hidraw.html)
+ - Cheat sheets
+ 	- [Tips for Reverse-Engineer](https://zeltser.com/media/docs/reverse-engineering-malicious-code-tips.pdf)
+ 	- [x86/Win32 Reverse Engineer](https://trailofbits.github.io/ctf/vulnerabilities/references/X86_Win32_Reverse_Engineering_Cheat_Sheet.pdf)
+ 	- [NASM x64 Assembly](https://www.cs.uaf.edu/2017/fall/cs301/reference/x86_64.html)
+ - IDA (I used the IDA Freeware in the whole process in making this, so no need of IDA Pro or anything more than that)
+ 	- [IDA Default Shortcuts](https://hex-rays.com/wp-content/static/products/ida/support/freefiles/IDA_Pro_Shortcuts.pdf)
+ 	- [Introduction to IDA](https://resources.infosecinstitute.com/topic/basics-of-ida-pro-2/) 

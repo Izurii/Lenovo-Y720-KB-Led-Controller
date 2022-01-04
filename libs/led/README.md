@@ -101,7 +101,7 @@ Let's run: `ls -lRp --ignore="*."{jpg,png,xml,gif,cso,pShader,ini,fx,dat}`
 
 That's the result: https://pastebin.com/S5A79sX3, much better.
 
-As soon as I was looking through the list of files and dirs I glance at something named "LED..."
+As soon as I was looking through the list of files and dirs I thing I saw something named "LED..."
 
 -   ./bin/x64/LedSettingsPlugin.dll
 
@@ -169,12 +169,12 @@ But what he sends? Idk at this point. Reading through the Microsoft documentatio
 
 So I know that in the register `rcx` we have the `Hid device object`, `rdx` we have the report buffer and `r8d` the report buffer length. What we are interested is the `rdx` that contains the buffer, so let's follow him up;
 
-`mov     rdx, rsi` (moving the value of `rsi` to `rdx)
+`mov     rdx, rsi` (moving the value of `rsi` to `rdx`)
 
 Here we have a memcpy
 
 ```
-lea     rcx, [rsi+1]	; Destination 		// Loading the address of the value in register rsi + 1 (offset) into rcx
+lea     rcx, [rsi+1]	; Destination 		// Loading the address of register "rsi+1" into "rcx"
 mov     r9d, 5		; SourceSize		// Source size = 5
 mov     r8, r12		; Source		// Moving value of r12 to r8, so the source is r12
 mov     edx, r9d	; DestinationSize	// Destination size = 5 (same register of source size r9d)
@@ -187,19 +187,21 @@ Ok, so now we know that the value of the `rsi` register is the buffer report, bu
 
 Just above the section that contains the call to HidD_SetFeature we have this block, the first instruction is `mov	byte ptr [rsi], 204`, that's it, the value 204 (decimal) is the value of the first byte of `rsi`
 
-So now let's write down what we know about the buffer report: We know that is 6 bytes in size, the first byte is the value **204** and the other 5 bytes is something that comes from `r12`(the memcpy call that we saw before). 
+So now let's write down what we know about the buffer report.
+
+We know that is 6 bytes in size, the first byte is the value **204** and the other 5 bytes is something that comes from `r12`(the memcpy call that we saw before). 
 
 Let's find out the value of this `r12` register. 
 
-![image](https://user-images.githubusercontent.com/46232520/147923772-64aaacd0-69a3-4d75-8868-ffa166b6a251.png)
+![image](https://user-images.githubusercontent.com/46232520/148063840-8ad066e2-ee32-4dd1-a5df-52beaaae2bc4.png)
 
-This in the initial block of the function. Look at the highlighted `r12`: `mov	r12, [rsp+176]` and `push r12`
+This is the initial block of the function `sub_18000E740`. Look at the highlighted `r12`: `mov	r12, [rsp+176]` and `push r12`
 
 From that we know that the value of `r12` comes from the `rsp` register. Let's go back to where we call this function we're seeing right now (aka. sub_18000E740).
 
-![image](https://user-images.githubusercontent.com/46232520/147923809-7eee5101-1a69-4bd6-8366-f4b8f59d10e7.png)
+![image](https://user-images.githubusercontent.com/46232520/148064252-3041b59e-384b-4160-895d-8cd531296e4e.png))
 
-I renamed the `sub_18000E740`to `HidSetFeature_thing`. This block I posted above is the call to the function and it's args, so let's look at it a bit:
+I renamed the `sub_18000E740` to `HidSetFeature_thing`. This block I posted above is the call to the function and it's args, so let's look at it a bit:
 
 The function `HidSetFeature_thing` have the signature of a [`__fastcall`](https://docs.microsoft.com/en-us/cpp/cpp/fastcall?view=msvc-170) (__fastcall is a calling convention) this means that the order of the args is made of:
 
@@ -218,7 +220,7 @@ mov	[rsp+32], rax	// Fourth arg
 
 Now we know that we use in total four arguments to call this function that make the call for HidD_SetFeature.
 
-Looking back at the function `HidSetFeature_thing`, the thing we want to know is the value of this: ![image](https://user-images.githubusercontent.com/46232520/147921637-f98ceb1a-2eca-43ff-b84b-aa140fbe955f.png)
+Looking back at the function `HidSetFeature_thing`, the thing we want to know is the value of this: ![image](https://user-images.githubusercontent.com/46232520/148064512-526fef48-f3d6-4e20-a0a0-05a145703589.png)
 
 So let's make a brief pause and collect what we got:
 
@@ -251,10 +253,24 @@ And now we found the other 3 bytes, `rsp+97`, `rsp+98` and `rsp+99`, let's colle
 	- Payload
 		- First byte:	204
 		- Second byte:	0	(rsp+96)
-		- Third byte:	style	(rsp+97)
-		- Fourth byte:	color	(rsp+98)
-		- Fifth byte:	3	(rsp+99) We don't know what this is yet
-		- Sixth byte:	block	(rsp+100)
+		- Third byte:	??	(rsp+97)
+		- Fourth byte:	??	(rsp+98)
+		- Fifth byte:	3	(rsp+99)
+		- Sixth byte:	block number	(rsp+100)
+	
+The value `rsp+97` comes from `sil` if you look at the block that send things to the `debugThing`:
+
+`mov	r9d, esi`
+
+From this we can assume that `esi` holds the value of the block style and `sil` is the byte 0 so I thing the `rsp+97` is the block style. Following this order `rsp+98` is going to be the block color. Let's rewrite our table above:
+
+	- Payload
+		- First byte:	204
+		- Second byte:	0	(rsp+96)
+		- Third byte:	block style	(rsp+97)
+		- Fourth byte:	block color	(rsp+98)
+		- Fifth byte:	3	(rsp+99)
+		- Sixth byte:	block number	(rsp+100)
 	
 First two bytes we just ignore them as is hard-coded into the thing we don't need to mess with that. I think the possible values for each byte is:
 
@@ -317,7 +333,7 @@ int main() {
 	// Third byte - block style
 	// Fourth byte - block color
 	// Fifth byte - 3
-	// Sixth byte - block
+	// Sixth byte - block number
 	unsigned char buffer[6] = {204, 0, 1, 1, 3, 1};
 	
 	// Doing the system call
@@ -329,33 +345,33 @@ int main() {
 
 If we compile (to compile it just run a `g++ filename.cc -o executable`) and run this, you'll see nothing... Nothing has changed, we didn't get an error but the code doesn't work. What could be wrong??
 
-Let's go back to the IDA and see if we missed something. I looked again at the two main functions that we found earlier `sub_1800286C0` (this is the function related to the `Y720LedSetHelper::SetLEDStatusEx`) and `HidSetFeature_thing`, I didn't find anything useful.
+Let's go back to the IDA and see if we missed something. I looked again at the two main functions that we found earlier `sub_1800286C0` (this is the function related to the `Y720LedSetHelper::SetLEDStatusEx`, I renamed it to `SetLedStatus`) and `HidSetFeature_thing`, I didn't find anything useful.
 
-For the sake of curiosity, let's see who calls the function `sub_1800286C0`:
+For the sake of curiosity, let's see who calls the function `SetLedStatus`:
 
-![image](https://user-images.githubusercontent.com/46232520/147994959-c27d6b57-78a4-409c-a046-a4b5145aa68a.png)
+![image](https://user-images.githubusercontent.com/46232520/148065931-cfe6346f-30f4-4803-bb79-642e0342aa92.png)
 
 Okay, we have five different locations to go through, let's do one by one.
 
-In the first XREF we have two calls to the function `sub_1800286C0` (in the end the first and second xref listed are in the same function):
+In the first XREF we have two calls to the function `SetLedStatus` (in the end the first and second xref listed are in the same function):
 
-![image](https://user-images.githubusercontent.com/46232520/147996070-83656863-3812-4573-8231-4f36a3b4de93.png)
+![image](https://user-images.githubusercontent.com/46232520/148066075-f1cc41e0-80b0-45cb-8eb4-148128b622b7.png)
 
 The third and fourth XREF are in the same function too:
 
-![image](https://user-images.githubusercontent.com/46232520/147996283-f909648d-8695-43d4-a13b-669a00683c46.png)
+![image](https://user-images.githubusercontent.com/46232520/148066165-109d8d3c-4d8d-430a-b33b-2e5f18bd7202.png)
 
 And the last one, the fifth XREF:
 
-![image](https://user-images.githubusercontent.com/46232520/147996467-dd624f41-1668-4c48-ba9c-172784bf0cd1.png)
+![image](https://user-images.githubusercontent.com/46232520/148066446-4ec9acc5-7a7d-4d08-ba40-d674e320b2d2.png)
 
-What I noticed while taking a look at the screenshots are that the first/second and third/fourth xref is somewhat similar, the thing that really caught my eyes is that after the call for the function `sub_1800286C0` we have a call to the function `sub_180028810` in both first/second and third/fourth xref, so let's take a look at that before we go to the fifth xref.
+What I noticed while taking a look at the screenshots are that the first/second and third/fourth xref is somewhat similar, the thing that really caught my eyes is that after the call for the function `SetLedStatus` we have a call to the function `sub_180028810` in both first/second and third/fourth xref, so let's take a look at that before we go to the fifth xref.
 
 ![image](https://user-images.githubusercontent.com/46232520/147997210-f647478f-40dc-43fb-a7d7-70162249e486.png)
 
 That's looking promising, we have a call to the `stringValidation` we renamed earlier and the `HidSetFeature_thing`, so after the payload is sent the driver sent something more. Before we go any further, let's just take a peek of the fifth xref.
 
-At the beginning of the function `sub_180027D90` (fifth xref) we have a call to the function `sub_180028DD0`, after this we have some debug logging thing and at the end we have the call for the function `sub_1800286C0`, so no call to the `sub_180028810`. So we just need to see the function `sub_180028DD0`:
+At the beginning of the function `sub_180027D90` (fifth xref) we have a call to the function `sub_180028DD0`, after this we have some debug logging thing and at the end we have the call for the function `SetLedStatus`, so no call to the `sub_180028810`. So we just need to see the function `sub_180028DD0`:
 
 ![image](https://user-images.githubusercontent.com/46232520/147997630-54ce1ccd-f4eb-4995-91e7-826bd9b00ab7.png)
 
@@ -389,7 +405,7 @@ The range `rsp+92~rsp+96` is already discarted because we don't see anything tha
 mov     byte ptr [rsp+96], 9
 ```
 
-The function `sub_180028810` is relatively small so we didn't spent much time searching for this. That instruction is the only thing that I think the payload is, so we have 1 byte?? 
+The function `sub_180028810` is relatively small so we didn't spent much time searching for this. That instruction is the only thing that I think the payload is, so we have only 2 bytes?? 
 
 So now we got a payload that is only two bytes in size, weird but let's follow through and see what happens if we just send a payload of 2 bytes in size.
 
@@ -408,7 +424,7 @@ int main() {
 	// Third byte - block style
 	// Fourth byte - block color
 	// Fifth byte - 3
-	// Sixth byte - block
+	// Sixth byte - block number
 	unsigned char buffer[6] = {204, 0, 1, 1, 3, 1};
 	
 	// Doing the system call
@@ -436,16 +452,16 @@ Let's collect our things and see what we've got at this point:
 		- Is 6 bytes in size
 		- The first two bytes are hard-coded (204 and 0)
 		- The other four bytes defines:
-			- 1º The block style
-			- 2º The block color
-			- 3º ???
-			- 4º The block
+			- 3º The block style
+			- 4º The block color
+			- 5º ???
+			- 6º The block
 	- After we send the payload we need to "end" or "save" our changes using a payload of two bytes
 		- The payload is hard-coded:
 			- The first byte is 204
 			- The second byte is 9
 			
-That's really good, so now we gotta discover what the third byte of the payload is and we're done. To test it, I just wrote a simple code:
+That's really good, so now we gotta discover what the fifth byte of the payload is and we're done. To test it, I just wrote a simple code:
 
 ```
 #include <sys/ioctl.h>
@@ -462,12 +478,12 @@ int main() {
 	// Third byte - block style
 	// Fourth byte - block color
 	// Fifth byte - 3
-	// Sixth byte - block
+	// Sixth byte - block number
 	
-	unsigned char buffer[6] = {204, 0, 1, 1, 0, 0};
-	unsigned char buffer[6] = {204, 0, 1, 1, 1, 1};
-	unsigned char buffer[6] = {204, 0, 1, 1, 2, 2};
-	unsigned char buffer[6] = {204, 0, 1, 1, 3, 3};
+	unsigned char bufferToFirstBlock[6] = {204, 0, 1, 1, 0, 0};
+	unsigned char bufferToSecondBlock[6] = {204, 0, 1, 1, 1, 1};
+	unsigned char bufferToThirdBlock[6] = {204, 0, 1, 1, 2, 2};
+	unsigned char bufferToFourthBlock[6] = {204, 0, 1, 1, 3, 3};
 	
 	// Doing the system calls
 	ioctl(fileDescriptor, HIDIOCSFEATURE(6), bufferToFirstBlock);
@@ -485,6 +501,6 @@ int main() {
 }
 ```
 
-Just to test it out I put the same color and style in every block of the keyboard, just changing the value of the third byte. I tried to capture a photo but the difference is so subtle that my camera can't differentiate anything, but I'll tell you what I found. The third byte is the brightness of the block, further testing I saw that we can go up until five, beyond that point I couldn't see any difference at all. 
+Just to test it out I put the same color and style in every block of the keyboard, just changing the value of the fifth byte. I tried to capture a photo but the difference is so subtle that my camera can't differentiate anything, but I'll tell you what I found. The fifth byte is the brightness of the block, further testing I saw that we can go up until five, beyond that point I couldn't see any difference at all. 
 
 So our driver is better than the Lenovo one, we can config each block brightness individually. 

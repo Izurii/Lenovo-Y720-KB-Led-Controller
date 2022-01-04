@@ -3,14 +3,15 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**/*",
+                "${workspaceFolder}/**",
                 "/usr/local/include/node/**",
+                "/usr/include/c++/**",
                 "${workspaceFolder}/libs/node_modules/node-addon-api"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/gcc",
+            "compilerPath": "/usr/bin/g++",
             "cStandard": "c11",
-            "cppStandard": "c++14",
+            "cppStandard": "c++20",
             "intelliSenseMode": "linux-gcc-x64"
         }
     ],

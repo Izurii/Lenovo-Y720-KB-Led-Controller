@@ -15,6 +15,8 @@ ThreadSafeFunction tsfn;
 #define SYS_CLASS_INPUT_PATH "/sys/class/input"
 #define DEVICE_INPUT_PATH "/dev/input/"
 
+const int HOTKEY_CODES[] = {240, 248};
+
 string _getInputDevice(const Env &env)
 {
 	string inputDevice = "";
@@ -52,7 +54,7 @@ string _getInputDevice(const Env &env)
 				char line[256] = {0};
 				while (fgets(line, sizeof(line), fp))
 				{
-					if (strstr(line, "Keyboard") && strstr(line, "8910"))
+					if (strstr(line, "KEY=302ff"))
 					{
 						foundDevice = true;
 						inputDevice = entry->d_name;
@@ -95,7 +97,7 @@ void _threadCallback(int err, libevdev *dev, input_event ev)
 
 		err = libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev);
 
-		if (err == 0 && ev.type == EV_KEY && ev.value == EV_KEY && ev.code == 240)
+		if (err == 0 && ev.type == EV_KEY && ev.value == EV_KEY && find(begin(HOTKEY_CODES), end(HOTKEY_CODES), ev.code))
 		{
 			napi_status status = tsfn.BlockingCall(callback);
 			if (status != napi_ok)

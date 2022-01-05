@@ -60,6 +60,10 @@ Reboot your PC or use this command to reload and trigger the new udev rules `sud
 -   libevdev (the needed files are already in the ./libs/hotkey/libs folder, but you never know ¯\_(ツ)\_/¯ )
 -   node-gyp (I do recommend to globally install it using either `npm install -g node-gyp` or `yarn global add node-gyp`)
 
+# I invite you to take a look at the branch `refact/v2`
+
+[Refact/v2 branch link](https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller/tree/refact/v2)
+
 # How to build it yourself
 
 1. First clone the repo

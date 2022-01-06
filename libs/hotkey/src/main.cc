@@ -15,7 +15,8 @@ ThreadSafeFunction tsfn;
 #define SYS_CLASS_INPUT_PATH "/sys/class/input"
 #define DEVICE_INPUT_PATH "/dev/input/"
 
-const int HOTKEY_CODES[] = {240, 248};
+const int HOTKEY_FN_SPACE = 786512;
+const int HOTKEY_7 = 786515;
 
 string _getInputDevice(const Env &env)
 {
@@ -84,11 +85,14 @@ String getInputDevice(const CallbackInfo &info)
 
 void _threadCallback(int err, libevdev *dev, input_event ev)
 {
-	auto callback = [](Napi::Env env, Function jsCallback)
+	int *value;
+	int hotkeyPressed;
+
+	auto callback = [](Napi::Env env, Function jsCallback, int *value)
 	{
 		if (jsCallback.IsFunction())
 		{
-			jsCallback.Call({});
+			jsCallback.Call({Number::New(env, *value)});
 		}
 	};
 
@@ -97,12 +101,21 @@ void _threadCallback(int err, libevdev *dev, input_event ev)
 
 		err = libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev);
 
-		if (err == 0 && ev.type == EV_KEY && ev.value == EV_KEY && find(begin(HOTKEY_CODES), end(HOTKEY_CODES), ev.code))
+		if (err == 0)
 		{
-			napi_status status = tsfn.BlockingCall(callback);
-			if (status != napi_ok)
+
+			if (ev.type == EV_MSC && (ev.value == HOTKEY_FN_SPACE || ev.value == HOTKEY_7))
 			{
-				break;
+				hotkeyPressed = ev.value;
+				value = &hotkeyPressed;
+			}
+			else if (ev.type == EV_KEY && ev.value == 0 && &hotkeyPressed > 0)
+			{
+				napi_status status = tsfn.BlockingCall(value, callback);
+				if (status != napi_ok)
+				{
+					break;
+				}
 			}
 		}
 		this_thread::sleep_for(chrono::milliseconds(100));

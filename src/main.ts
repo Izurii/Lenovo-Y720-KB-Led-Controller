@@ -13,7 +13,7 @@ import sudo = require("sudo-prompt");
 
 // LIBS
 import { SegmentBrightness, SegmentColor, setKeyboardOptions, getHidrawDevice, BacklightMode } from "./addons/led";
-import { listenHotkey, getInputDevice } from "./addons/hotkey";
+import { listenHotkey, getInputDevice, HotkeyType } from "./addons/hotkey";
 
 const isFirstRun = firstRun();
 const LedController = new AutoLaunch({
@@ -201,8 +201,17 @@ if (!app.requestSingleInstanceLock()) {
 				selectedProfile.profileOptions
 			);
 
-			listenHotkey(() => {
-				mainWindow!.webContents.send("changeProfileHotKey", null);
+			listenHotkey((hotkeyType) => {
+				if (hotkeyType === HotkeyType.HOTKEY_FN_SPACE) {
+					mainWindow!.webContents.send("changeProfileHotKey", null);
+				} else if (hotkeyType === HotkeyType.HOTKEY_7) {
+					if (mainWindow!.isMinimized()) {
+						mainWindow!.restore();
+					} else if (!mainWindow!.isVisible()) {
+						mainWindow!.show();
+					}
+					mainWindow!.focus();
+				}
 			});
 		} catch (e) {
 			genericError((e as Error).message);

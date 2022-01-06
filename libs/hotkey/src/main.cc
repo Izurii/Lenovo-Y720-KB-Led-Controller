@@ -103,18 +103,20 @@ void _threadCallback(int err, libevdev *dev, input_event ev)
 
 		if (err == 0)
 		{
-
 			if (ev.type == EV_MSC && (ev.value == HOTKEY_FN_SPACE || ev.value == HOTKEY_7))
 			{
 				hotkeyPressed = ev.value;
 				value = &hotkeyPressed;
 			}
-			else if (ev.type == EV_KEY && ev.value == 0 && &hotkeyPressed > 0)
+			else if (ev.type == EV_KEY && ev.value == 0)
 			{
-				napi_status status = tsfn.BlockingCall(value, callback);
-				if (status != napi_ok)
+				if (hotkeyPressed && hotkeyPressed > 0)
 				{
-					break;
+					napi_status status = tsfn.BlockingCall(value, callback);
+					if (status != napi_ok)
+					{
+						break;
+					}
 				}
 			}
 		}

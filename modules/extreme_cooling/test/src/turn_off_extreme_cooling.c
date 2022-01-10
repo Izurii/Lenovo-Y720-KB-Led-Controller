@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
-#include "../headers/ioctl_def.h"
+#include "../../headers/ioctl_def.h"
 
 int main()
 {
@@ -20,7 +20,7 @@ int main()
 		return 0;
 	}
 
-	ioctl(fd, TURN_ON_EXTREME_COOLING);
+	ioctl(fd, TURN_OFF_EXTREME_COOLING);
 
 	close(fd);
 }

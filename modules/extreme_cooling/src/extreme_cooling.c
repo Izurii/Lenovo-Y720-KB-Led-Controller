@@ -25,7 +25,7 @@ static int get_acpi_handle(acpi_handle *handle)
 
 	if (ACPI_FAILURE(status))
 	{
-		printk(KERN_ERR "Y720 ACPI Call Module: Could not get handle for method %s\n", method);
+		printk(KERN_ERR "Y720 - Extreme Cooling Module: Could not get handle for method %s\n", method);
 		return -1;
 	}
 	return 1;
@@ -54,7 +54,7 @@ static void turn_on_extreme_cooling(void)
 	status = acpi_evaluate_object(handle, NULL, &acpiObjectList, &buffer);
 	if (ACPI_FAILURE(status))
 	{
-		printk(KERN_ERR "Y720 ACPI Call Module: Method call to turn on extreme cooling failed\n");
+		printk(KERN_ERR "Y720 - Extreme Cooling Module: Method call to turn on extreme cooling failed\n");
 		return;
 	}
 }
@@ -82,7 +82,7 @@ static void turn_off_extreme_cooling(void)
 	status = acpi_evaluate_object(handle, NULL, &acpiObjectList, &buffer);
 	if (ACPI_FAILURE(status))
 	{
-		printk(KERN_ERR "Y720 ACPI Call Module: Method call to turn off extreme cooling failed\n");
+		printk(KERN_ERR "Y720 - Extreme Cooling Module: Method call to turn off extreme cooling failed\n");
 		return;
 	}
 }
@@ -90,13 +90,13 @@ static void turn_off_extreme_cooling(void)
 static int open(struct inode *inode, struct file *filp)
 {
 
-	printk(KERN_INFO "Y720 ACPI Call Module: Device file opened\n");
+	printk(KERN_INFO "Y720 - Extreme Cooling Module: Device file opened\n");
 	return 0;
 }
 
 static int release(struct inode *inode, struct file *filp)
 {
-	printk(KERN_INFO "Y720 ACPI Call Module: Device file closed\n");
+	printk(KERN_INFO "Y720 - Extreme Cooling Module: Device file closed\n");
 	return 0;
 }
 
@@ -111,7 +111,7 @@ static long ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		turn_off_extreme_cooling();
 		break;
 	default:
-		printk(KERN_INFO "Y720 ACPI Call Module: Nothing to see here\n");
+		printk(KERN_INFO "Y720 - Extreme Cooling Module: Nothing to see here\n");
 		break;
 	}
 	return 0;
@@ -132,25 +132,25 @@ static struct miscdevice misc_device_y720 = {
 	.mode = 0604,
 };
 
-static int __init y720_module_init(void)
+static int __init extreme_cooling_module_init(void)
 {
 
 	int error;
 	error = misc_register(&misc_device_y720);
 	if (error)
 	{
-		printk(KERN_INFO "Y720 ACPI Call Module: Unable to register \"y720\" misc device\n");
+		printk(KERN_INFO "Y720 - Extreme Cooling Module: Unable to register \"y720\" misc device\n");
 		return error;
 	}
 
 	return 0;
 }
 
-static void __exit y720_module_exit(void)
+static void __exit extreme_cooling_module_exit(void)
 {
 	misc_deregister(&misc_device_y720);
-	printk(KERN_INFO "Y720 ACPI Call Module: Unloaded!\n");
+	printk(KERN_INFO "Y720 - Extreme Cooling Module: Unloaded!\n");
 }
 
-module_init(y720_module_init);
-module_exit(y720_module_exit);
+module_init(extreme_cooling_module_init);
+module_exit(extreme_cooling_module_exit);

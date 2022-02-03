@@ -13,6 +13,9 @@
 #include "../headers/ioctl_def.h"
 
 MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Module that exposes two IOCTL calls to turn on/off the extreme cooling mode of the Lenovo Legion Y720");
+MODULE_AUTHOR("Heitor Massarente <heitor_massarente@msn.com>");
+MODULE_VERSION("1.0.0");
 
 // Get the ACPI handle
 static int get_acpi_handle(acpi_handle *handle)
@@ -57,6 +60,7 @@ static void turn_on_extreme_cooling(void)
 		printk(KERN_ERR "Y720 - Extreme Cooling Module: Method call to turn on extreme cooling failed\n");
 		return;
 	}
+	printk(KERN_INFO "Y720 - Extreme Cooling Module: Extreme Cooling mode turned on\n");
 }
 
 // Turn off extreme cooling mode
@@ -85,23 +89,25 @@ static void turn_off_extreme_cooling(void)
 		printk(KERN_ERR "Y720 - Extreme Cooling Module: Method call to turn off extreme cooling failed\n");
 		return;
 	}
+	printk(KERN_INFO "Y720 - Extreme Cooling Module: Extreme Cooling mode turned off\n");
 }
 
 static int open(struct inode *inode, struct file *filp)
 {
 
-	printk(KERN_INFO "Y720 - Extreme Cooling Module: Device file opened\n");
+	printk(KERN_DEBUG "Y720 - Extreme Cooling Module: Device file opened\n");
 	return 0;
 }
 
 static int release(struct inode *inode, struct file *filp)
 {
-	printk(KERN_INFO "Y720 - Extreme Cooling Module: Device file closed\n");
+	printk(KERN_DEBUG "Y720 - Extreme Cooling Module: Device file closed\n");
 	return 0;
 }
 
 static long ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
+	printk(KERN_DEBUG "Y720 - Extreme Cooling Module: IOCTL called\n");
 	switch (cmd)
 	{
 	case TURN_ON_EXTREME_COOLING:
@@ -111,7 +117,7 @@ static long ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		turn_off_extreme_cooling();
 		break;
 	default:
-		printk(KERN_INFO "Y720 - Extreme Cooling Module: Nothing to see here\n");
+		printk(KERN_DEBUG "Y720 - Extreme Cooling Module: Nothing to see here\n");
 		break;
 	}
 	return 0;
@@ -134,14 +140,16 @@ static struct miscdevice misc_device_y720 = {
 
 static int __init extreme_cooling_module_init(void)
 {
-
 	int error;
 	error = misc_register(&misc_device_y720);
 	if (error)
 	{
-		printk(KERN_INFO "Y720 - Extreme Cooling Module: Unable to register \"y720\" misc device\n");
+		printk(KERN_ERR "Y720 - Extreme Cooling Module: Unable to register \"y720\" misc device\n");
 		return error;
 	}
+
+	printk(KERN_DEBUG "Y720 - Extreme Cooling Module: \"y720\" misc device registered\n");
+	printk(KERN_INFO "Y720 - Extreme Cooling Module: Module loaded\n");
 
 	return 0;
 }
@@ -149,6 +157,7 @@ static int __init extreme_cooling_module_init(void)
 static void __exit extreme_cooling_module_exit(void)
 {
 	misc_deregister(&misc_device_y720);
+	printk(KERN_DEBUG "Y720 - Extreme Cooling Module: \"y720\" misc device removed\n");
 	printk(KERN_INFO "Y720 - Extreme Cooling Module: Unloaded!\n");
 }
 

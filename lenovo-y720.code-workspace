@@ -1,13 +1,16 @@
 {
 	"folders": [
 		{
+			"name": "modules",
+			"path": "modules"
+		},
+		{
+			"name": "Lenovo-Y720-KB-Led-Controller",
 			"path": "."
 		},
 		{
+			"name": "libs",
 			"path": "libs"
-		},
-		{
-			"path": "modules"
 		}
 	],
 	"extensions": {

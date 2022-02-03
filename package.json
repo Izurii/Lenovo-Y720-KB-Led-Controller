@@ -15,7 +15,9 @@
 		"prestart": "./scripts/prebuild_start.sh",
 		"start": "electron .",
 		"build-libs": "yarn --cwd ./libs && yarn --cwd ./libs build",
-		"build-modules": "./scripts/modules/build.sh"
+		"build-modules": "./scripts/modules/build.sh",
+		"install-modules": "./scripts/modules/install.sh",
+		"uninstall-modules": "./scripts/modules/uninstall.sh"
 	},
 	"build": {
 		"appId": "y720-kb-led-controller",

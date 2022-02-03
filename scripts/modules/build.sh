@@ -7,7 +7,7 @@ create_extreme_cooling_module_md5() {
 	echo "Creating Extreme Cooling Module MD5 file..."
 	md5sum "$EXTREME_COOLING_MODULE_DIR"/headers/ioctl_def.h \
 	"$EXTREME_COOLING_MODULE_DIR"/src/Makefile \
-	"$EXTREME_COOLING_MODULE_DIR"/src/y720_module.c > "$EXTREME_COOLING_MODULE_MD5"
+	"$EXTREME_COOLING_MODULE_DIR"/src/extreme_cooling.c > "$EXTREME_COOLING_MODULE_MD5"
 	echo "Extreme Cooling Module MD5 file created"
 }
 

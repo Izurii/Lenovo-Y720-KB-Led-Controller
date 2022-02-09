@@ -4,7 +4,7 @@
 
 This software controls the backlight of Lenovo Legion Y720 Keyboard on Linux, as the Lenovo didn't make the drivers/software for Linux.
 
-It works mostly the same as the Lenovo Nerve Center, including the global hotkey of **Fn+Space** to change between profiles created by the user.
+It works mostly the same as the Lenovo Nerve Center, including the global hotkey of **Fn+Space** to change between profiles created by the user and the hotkey that is located in the key **7** of the numpad this hotkey opens the software.
 
 Here a screenshot:
 

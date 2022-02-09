@@ -34,7 +34,7 @@ Create a file called `/etc/udev/rules.d/99-any-name-you-want.rules` and write th
 
 ```
 SUBSYSTEM=="hidraw", ATTRS{name}=="ITE33D1:00", MODE="0666"
-SUBSYSTEM=="input", ATTRS{name}=="*Keyboard*", ATTRS{id/vendor}=="048d", ATTRS{id/product}=="c100", MODE="0666"
+SUBSYSTEM=="input", ATTRS{name}=="*Keyboard*", MODE="0666"
 ```
 
 Reboot your PC or use this command to reload and trigger the new udev rules `sudo udevadm control --reload-rules && sudo udevadm trigger`
@@ -53,16 +53,12 @@ Reboot your PC or use this command to reload and trigger the new udev rules `sud
     -   ShellCheck (if you want to use this extension follow their guide on how to install it)
 -   Patience
 
-# Requirements to build/start
+# Requirements to build or start the dev version
 
 -   GCC/G++
 -   yarn
 -   libevdev (the needed files are already in the ./libs/hotkey/libs folder, but you never know ¯\_(ツ)\_/¯ )
 -   node-gyp (I do recommend to globally install it using either `npm install -g node-gyp` or `yarn global add node-gyp`)
-
-# I invite you to take a look at the branch `refact/v2`
-
-[Refact/v2 branch link](https://github.com/Izurii/Lenovo-Y720-KB-Led-Controller/tree/refact/v2)
 
 # How to build it yourself
 
@@ -86,14 +82,14 @@ yarn start
 
 # Good to know
 
- - Both scripts (build and start) has a lot of things behind doing all the dirty work.
- - `yarn run build` or `yarn build` do these actions:
- 	- As soon as you run the command, yarn will trigger the "prebuild" script, the prebuild script is going to run the sh file `./scripts/prebuild_start.sh`. This shell script is going to run all the things needed to build the application, take a look at the script and see what it does.
- 	- The same logic applies to `yarn run start` it runs the file `./scripts/prebuild_start.sh`
- - You can take a look at the [README inside the folder `./scripts`](./scripts/README.md) if you want more details in what those scripts is doing.
- - I wrote some details how the addons I built for the app works
- 	- [LED Controller Node Native Addon Documentation](./libs/led/README.md)
- 	- [Hotkey Monitor Node Native Addon Documentation](./libs/hotkey/README.md)
+-   Both scripts (build and start) has a lot of things behind doing all the dirty work.
+-   `yarn run build` or `yarn build` do these actions:
+    -   As soon as you run the command, yarn will trigger the "prebuild" script, the prebuild script is going to run the sh file `./scripts/prebuild_start.sh`. This shell script is going to run all the things needed to build the application, take a look at the script and see what it does.
+    -   The same logic applies to `yarn run start` it runs the file `./scripts/prebuild_start.sh`
+-   You can take a look at the [README inside the folder `./scripts`](./scripts/README.md) if you want more details in what those scripts is doing.
+-   I wrote some details how the addons I built for the app works
+    -   [LED Controller Node Native Addon Documentation](./libs/led/README.md)
+    -   [Hotkey Monitor Node Native Addon Documentation](./libs/hotkey/README.md)
 
 [depstat-url]: https://david-dm.org/Izurii/Lenovo-Y720-KB-Led-Controller
 [depstat-image]: https://david-dm.org/Izurii/Lenovo-Y720-KB-Led-Controller.svg?style=flat

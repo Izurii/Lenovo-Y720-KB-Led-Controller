@@ -32,3 +32,13 @@ make build
 ```
 
 The same thing as above, the only difference is that the executables is going to be in `tests/bin` folder. You're going to have two executables, one that turns on the extreme cooling mode and one that turns off.
+
+# How I accomplished that
+
+First think I though is that the piece of software that enable/disable the extreme cooling mode was going to be some DLL like the LED, in a way it's but it's not, we indeed have a DLL that is used in the Lenovo Nerve Center software:
+
+ - FanManagerPlugin.dll (is a good candidate)
+ - ... I didn't find another thing that sounds like a Fan Manager thing 
+
+So let's open IDA Pro and get our hands dirty.
+

@@ -1,0 +1,27 @@
+{
+	"folders": [
+		{
+			"name": "modules",
+			"path": "modules"
+		},
+		{
+			"name": "Lenovo-Y720-KB-Led-Controller",
+			"path": "."
+		},
+		{
+			"name": "libs",
+			"path": "libs"
+		}
+	],
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"jeff-hykin.better-cpp-syntax",
+			"jeff-hykin.better-shellscript-syntax",
+			"vadimcn.vscode-lldb",
+			"editorconfig.editorconfig",
+			"tetradresearch.vscode-h2o",
+			"timonwong.shellcheck",
+		]
+	}
+}

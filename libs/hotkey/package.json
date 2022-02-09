@@ -1,0 +1,10 @@
+{
+	"engines": {
+		"node": "=16.9.1"
+	},
+	"scripts": {
+		"build": "cd ../ && yarn run build-hotkey-addon",
+		"build:dev": "node-gyp rebuild --debug",
+		"clean": "node-gyp clean"
+	}
+}

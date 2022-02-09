@@ -2,3 +2,6 @@ node_modules/
 package-lock.json
 .vscode/
 dist/
+build/
+*.node
+*.md5

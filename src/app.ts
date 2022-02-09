@@ -1,10 +1,13 @@
 "use strict";
-
 var angular = require("angular");
+
 require("angular-route");
 require("angular-material");
-const { ipcRenderer } = require("electron");
-const { BacklightMode } = require("../driver/options");
+
+import { UserProfile } from "./main";
+import { ipcRenderer } from "electron";
+import { BacklightMode, SegmentBrightness } from "./addons/led";
+import { ISCEService, IScope } from "angular";
 
 const userProfilesStore = ipcRenderer.sendSync("getUserProfiles");
 
@@ -94,39 +97,67 @@ const Colors = [
 const Brightness = [
 	{
 		brightnessName: "OFF",
-		brightnessValue: 0,
+		brightnessValue: SegmentBrightness.OFF,
 	},
 	{
 		brightnessName: "LOW",
-		brightnessValue: 1,
+		brightnessValue: SegmentBrightness.LOW,
 	},
 	{
 		brightnessName: "MEDIUM",
-		brightnessValue: 2,
+		brightnessValue: SegmentBrightness.MEDIUM,
 	},
 	{
 		brightnessName: "HIGH",
-		brightnessValue: 3,
+		brightnessValue: SegmentBrightness.HIGH,
 	},
 	{
 		brightnessName: "ULTRA",
-		brightnessValue: 4,
+		brightnessValue: SegmentBrightness.ULTRA,
 	},
 	{
 		brightnessName: "ENOUGH",
-		brightnessValue: 5,
+		brightnessValue: SegmentBrightness.ENOUGH,
 	},
 ];
+
+type IindexControllerScope = {
+	selectedProfile: number;
+	changeProfile: () => void;
+	brightness: typeof Brightness;
+	colors: typeof Colors;
+	blMode: typeof BacklightMode;
+	userProfiles: UserProfile[];
+	keyboard: Array<Array<string>>;
+	numpad: Array<Array<string>>;
+	selectedSegment: number;
+	selectedBrightness: number;
+	backlightMode: number;
+	saveProfiles: () => void;
+	applySettings: () => void;
+	addProfile: () => void;
+	deleteProfile: () => void;
+	segmentsOptions: { segmentColor: number, segmentBrightness: number }[];
+	selectSegmentColor: (index: number) => void;
+	checkSelectedSegmentColor: (index: number) => void;
+	renameProfile: () => void;
+	backlightModeIcons: Array<string>;
+	getModeIcon: (index: number) => void;
+	changeBacklightMode: (index: number) => void;
+	selectSegment: (keyRow: number, keyIndex: number, kOrN: "k" | "n") => void;
+	getKey: (keyWidth: number, keyRow: number, keyIndex: number, kOrN: "k" | "n") => ISCEService["trustAsHtml"];
+	changeAllSegmentBrightness: () => void;
+};
 
 var app = angular.module("app", ["ngRoute", "ngAnimate", "ngMaterial"]);
 app.filter("htmlTrusted", [
 	"$sce",
-	function ($sce) {
-		return function (text) {
+	function ($sce: angular.ISCEService) {
+		return function (text: string) {
 			return $sce.trustAsHtml(text);
 		};
 	},
-]).controller("indexController", function ($scope, $sce, $mdDialog) {
+]).controller("indexController", function ($scope: IScope & IindexControllerScope, $sce: ISCEService, $mdDialog: any) {
 	ipcRenderer.on("selectProfileTray", (event, selectedProfile) => {
 		$scope.selectedProfile = selectedProfile;
 		$scope.changeProfile();
@@ -263,7 +294,7 @@ app.filter("htmlTrusted", [
 	// Keys size config END
 
 	$scope.saveProfiles = () => {
-		let profilesArray = Array.from($scope.userProfiles);
+		let profilesArray = Array.from($scope.userProfiles) as UserProfile[];
 		profilesArray.forEach((i, x) => {
 			if (x == $scope.selectedProfile)
 				profilesArray[x].backlightMode = $scope.backlightMode;
@@ -327,7 +358,7 @@ app.filter("htmlTrusted", [
 			.cancel("Cancel");
 
 		$mdDialog.show(dialog).then(
-			(result) => {
+			(result: string) => {
 				$scope.userProfiles.push({
 					profileName: result,
 					profileOptions: [...baseSegmentsOptions],
@@ -336,7 +367,7 @@ app.filter("htmlTrusted", [
 				$scope.selectedProfile = $scope.userProfiles.length - 1;
 				$scope.changeProfile();
 			},
-			() => {}
+			() => { }
 		);
 	};
 
@@ -366,12 +397,12 @@ app.filter("htmlTrusted", [
 			.cancel("Cancel");
 
 		$mdDialog.show(dialog).then(
-			(result) => {
+			(result: string) => {
 				$scope.userProfiles[$scope.selectedProfile].profileName =
 					result;
 				$scope.saveProfiles();
 			},
-			() => {}
+			() => { }
 		);
 	};
 
@@ -429,7 +460,7 @@ app.filter("htmlTrusted", [
 		$scope.applySettings();
 	};
 
-	const getKeyRow = (keyRow, keyIndex, kOrN) => {
+	const getKeyRow = (keyRow: number, keyIndex: number, kOrN: "k" | "n") => {
 		if (kOrN == "k") {
 			if (keyIndex < 4) keyRow = 0;
 			if (keyIndex >= 4 && keyIndex < 9) {
@@ -460,19 +491,15 @@ app.filter("htmlTrusted", [
 		if (keyRow == $scope.selectedSegment)
 			boxShadowInner = "inset 0 0 8px #ffffff";
 
-		var boxShadow = `box-shadow: ${boxShadowInner} ${
-			$scope.segmentsOptions[keyRow].segmentColor != 19 && boxShadowInner
-				? ", "
+		var boxShadow = `box-shadow: ${boxShadowInner} ${$scope.segmentsOptions[keyRow].segmentColor != 19 && boxShadowInner
+			? ", "
+			: ""
+			} ${$scope.segmentsOptions[keyRow].segmentColor != 19
+				? `0 0 ${$scope.segmentsOptions[keyRow].segmentBrightness * 2.3
+				}px ${$scope.segmentsOptions[keyRow].segmentBrightness / 1.6
+				}px ${colorOption}`
 				: ""
-		} ${
-			$scope.segmentsOptions[keyRow].segmentColor != 19
-				? `0 0 ${
-						$scope.segmentsOptions[keyRow].segmentBrightness * 2.3
-				  }px ${
-						$scope.segmentsOptions[keyRow].segmentBrightness / 1.6
-				  }px ${colorOption}`
-				: ""
-		}`;
+			}`;
 
 		return $sce.trustAsHtml(`<span
 			class="keys not-selectable"
@@ -498,7 +525,7 @@ app.filter("htmlTrusted", [
 			$scope.segmentsOptions[idx].segmentBrightness =
 				$scope.selectedBrightness;
 		});
-		$scope.applySettings($scope.backlightMode, $scope.segmentsOptions);
+		$scope.applySettings();
 	};
 
 	// Brightness END

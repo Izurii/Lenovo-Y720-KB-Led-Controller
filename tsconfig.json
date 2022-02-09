@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./",
+		"target": "ESNext",
+		"strict": true,
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"outDir": "./dist/js",
+	},
+	"include": [
+		"src/**/*",
+	],
+	"exclude": [
+		"node_modules"
+	]
+}

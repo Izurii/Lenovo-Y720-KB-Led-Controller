@@ -19,6 +19,6 @@ jobs:
         run: |
           yarn install
           yarn run build-libs
-          yarn run release
+          yarn run build
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}

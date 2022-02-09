@@ -85,15 +85,16 @@ String getInputDevice(const CallbackInfo &info)
 
 void _threadCallback(int err, libevdev *dev, input_event ev)
 {
-	int *value;
-	int hotkeyPressed;
+	int hotkeyPressedValue;
+	bool hotkeyPressed = false;
 
-	auto callback = [](Napi::Env env, Function jsCallback, int *value)
+	auto callback = [&](Napi::Env env, Function jsCallback, int *value)
 	{
 		if (jsCallback.IsFunction())
 		{
 			jsCallback.Call({Number::New(env, *value)});
 		}
+		hotkeyPressedValue = 0;
 	};
 
 	do
@@ -105,18 +106,21 @@ void _threadCallback(int err, libevdev *dev, input_event ev)
 		{
 			if (ev.type == EV_MSC && (ev.value == HOTKEY_FN_SPACE || ev.value == HOTKEY_7))
 			{
-				hotkeyPressed = ev.value;
-				value = &hotkeyPressed;
-			}
-			else if (ev.type == EV_KEY && ev.value == 0)
-			{
-				if (hotkeyPressed && hotkeyPressed > 0)
+				if (!hotkeyPressed)
 				{
-					napi_status status = tsfn.BlockingCall(value, callback);
-					if (status != napi_ok)
-					{
-						break;
-					}
+					hotkeyPressed = true;
+					hotkeyPressedValue = ev.value;
+				}
+			}
+			else if (ev.type == EV_KEY && ev.value == 0 && hotkeyPressed)
+			{
+				napi_status status = tsfn.BlockingCall(&hotkeyPressedValue, callback);
+
+				hotkeyPressed = false;
+
+				if (status != napi_ok)
+				{
+					break;
 				}
 			}
 		}

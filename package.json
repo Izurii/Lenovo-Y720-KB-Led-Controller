@@ -12,6 +12,7 @@
 	"scripts": {
 		"prebuild": "./scripts/prebuild_start.sh",
 		"build": "electron-builder",
+		"prerelease": "./scripts/prebuild_start.sh",
 		"release": "electron-builder",
 		"prestart": "./scripts/prebuild_start.sh",
 		"start": "electron .",

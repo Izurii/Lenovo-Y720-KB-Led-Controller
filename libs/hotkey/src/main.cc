@@ -14,6 +14,8 @@ ThreadSafeFunction tsfn;
 
 #define SYS_CLASS_INPUT_PATH "/sys/class/input"
 #define DEVICE_INPUT_PATH "/dev/input/"
+#define KEYBOARD_VENDOR_ID "48d"
+#define KEYBOARD_PRODUCT_ID "c100"
 
 const int HOTKEY_FN_SPACE = 786512;
 const int HOTKEY_7 = 786515;
@@ -31,38 +33,54 @@ string _getInputDevice(const Env &env)
 		throw Error::New(env, "Error opening input directory");
 	}
 
-	bool foundDevice = false;
+	bool isDeviceProductCorrect, isDeviceVendorCorrect = false;
 	while ((entry = readdir(directory)) != NULL)
 	{
 
-		if (foundDevice)
+		if (isDeviceProductCorrect && isDeviceVendorCorrect)
 		{
 			break;
 		}
 
 		if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 && strstr(entry->d_name, "event"))
 		{
-			string filePath = string(SYS_CLASS_INPUT_PATH) + "/" + entry->d_name + "/device/uevent";
-			FILE *fp = fopen(filePath.c_str(), "r");
+			string devicePath = string(SYS_CLASS_INPUT_PATH) + "/" + entry->d_name + "/device/id/";
 
-			if (!fp)
+			string deviceProductPath = devicePath + "product";
+			string deviceVendorPath = devicePath + "vendor";
+
+			FILE *deviceProductFp = fopen(deviceProductPath.c_str(), "r");
+			FILE *deviceVendorFp = fopen(deviceVendorPath.c_str(), "r");
+
+			if (!deviceProductFp || !deviceVendorFp)
 			{
 				throw Error::New(env, "Error opening input file");
 			}
 
-			if (fp)
+			char line[256] = {0};
+			while (fgets(line, sizeof(line), deviceProductFp))
+			{
+				if (strstr(line, KEYBOARD_PRODUCT_ID))
+				{
+					isDeviceProductCorrect = true;
+					break;
+				}
+			}
+			fclose(deviceProductFp);
+
+			if (isDeviceProductCorrect)
 			{
 				char line[256] = {0};
-				while (fgets(line, sizeof(line), fp))
+				while (fgets(line, sizeof(line), deviceVendorFp))
 				{
-					if (strstr(line, "KEY=302ff"))
+					if (strstr(line, KEYBOARD_VENDOR_ID))
 					{
-						foundDevice = true;
+						isDeviceVendorCorrect = true;
 						inputDevice = entry->d_name;
 						break;
 					}
 				}
-				fclose(fp);
+				fclose(deviceVendorFp);
 			}
 		}
 	}

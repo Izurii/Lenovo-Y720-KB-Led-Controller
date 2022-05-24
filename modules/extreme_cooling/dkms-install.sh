@@ -17,38 +17,38 @@ AUTOINSTALL=\"yes\"
 "
 
 if rm -rf /usr/src/"${MODULE_NAME}"*; then
-	echo "Extreme Cooling Module source removed for new install"
+	echo "Y720 - Extreme Cooling Module source removed for new install"
 else
-	echo "Extreme Cooling Module source removal failed"
+	echo "Y720 - Extreme Cooling Module source removal failed"
 	exit 1
 fi
 
 if mkdir /usr/src/"${MODULE_NAME}"-"${MODULE_VERSION}"; then
-	echo "Extreme Cooling Module source directory created"
+	echo "Y720 - Extreme Cooling Module source directory created"
 else
-	echo "Extreme Cooling Module source directory creation failed"
+	echo "Y720 - Extreme Cooling Module source directory creation failed"
 	exit 1
 fi
 
 if echo "$DKMS_CONF" > /usr/src/"${MODULE_NAME}"-"${MODULE_VERSION}"/dkms.conf; then
-	echo "Extreme Cooling Module dkms.conf file created"
+	echo "Y720 - Extreme Cooling Module dkms.conf file created"
 else
-	echo "Extreme Cooling Module dkms.conf file creation failed"
+	echo "Y720 - Extreme Cooling Module dkms.conf file creation failed"
 	exit 1
 fi
 
 if	\
 	cp -R "${EXTREME_COOLING_MODULE_DIR}"/src /usr/src/"${MODULE_NAME}"-"${MODULE_VERSION}" && \
 	cp -R "${EXTREME_COOLING_MODULE_DIR}"/headers /usr/src/"${MODULE_NAME}"-"${MODULE_VERSION}"; then
-	echo "Extreme Cooling Module source copied"
+	echo "Y720 - Extreme Cooling Module source copied"
 else
-	echo "Extreme Cooling Module source copy failed"
+	echo "Y720 - Extreme Cooling Module source copy failed"
 	exit 1
 fi
 
 if sudo dkms install -m "${MODULE_NAME}" -v "${MODULE_VERSION}"; then
-	echo "Extreme Cooling Module installed"
+	echo "Y720 - Extreme Cooling Module installed"
 else
-	echo "Extreme Cooling Module install failed"
+	echo "Y720 - Extreme Cooling Module install failed"
 	exit 1
 fi
